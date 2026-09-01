@@ -1,0 +1,316 @@
+{#
+  The compliance report, on paper.
+
+  Written to the tokens in docs/design-direction.md so screen and paper are one system,
+  and to the CSS subset that both WeasyPrint and xhtml2pdf render identically — tables
+  and background colours, no flexbox, no grid. See app/reports/pdf.py for why.
+
+  Status is never carried by colour alone: every status appears as a word as well as a
+  swatch, so this survives greyscale printing and the photocopier in a district office.
+#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Compliance report {{ scan.scan_id[:12] }}</title>
+<style>
+{# Marked safe because it is CSS built in app/reports/pdf.py from this package's own
+   directory, never from anything a caller supplied. Autoescaped, its quotes become
+   &#34; and the whole stylesheet fails to parse. #}
+{{ font_css|safe }}
+  @page { size: A4; margin: 14mm 14mm 18mm 14mm; }
+
+  /* The vendored faces first: the base-14 PDF fonts have no rupee sign. */
+  body  { font-family: "MetroScan Sans", Helvetica, Arial, sans-serif; font-size: 8.5pt;
+          color: #16191C; background: #F4F5F2; }
+  .mono { font-family: "MetroScan Mono", Courier, monospace; }
+
+  h1, h2, h3 { margin: 0; font-weight: bold; letter-spacing: 0.02em; }
+  h1 { font-size: 15pt; color: #F4F5F2; }
+  h2 { font-size: 9.5pt; color: #16191C; padding-bottom: 2pt; }
+
+  .eyebrow { font-size: 6.5pt; letter-spacing: 0.16em; text-transform: uppercase;
+             color: #6E7378; }
+  .masthead { background: #16191C; color: #F4F5F2; padding: 9pt 11pt; }
+  .masthead .eyebrow { color: #9AA0A6; }
+
+  table { border-collapse: collapse; width: 100%; }
+  td, th { vertical-align: top; padding: 3pt 5pt; text-align: left; }
+
+  .section { margin-top: 11pt; }
+  /* The graduation tick as the structural rule, per the design direction. */
+  .rule-top { border-top: 1.6pt solid #16191C; }
+  .hair     { border-top: 0.4pt solid #C9CCC8; }
+
+  .k  { font-size: 6.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: #6E7378; }
+  .v  { font-size: 8.5pt; }
+
+  .verdict-COMPLIANT     { background: #2C6A5D; color: #F4F5F2; }
+  .verdict-NON_COMPLIANT { background: #A93B28; color: #F4F5F2; }
+  .verdict-INCONCLUSIVE  { background: #A67C2E; color: #F4F5F2; }
+
+  .s-PASS         { color: #2C6A5D; font-weight: bold; }
+  .s-FAIL         { color: #A93B28; font-weight: bold; }
+  .s-NEEDS_REVIEW { color: #A67C2E; font-weight: bold; }
+  .s-NA           { color: #6E7378; }
+
+  /* A status swatch is a hairline of colour, so it must not carry the 5pt of
+     horizontal cell padding the body stylesheet gives every td — 3pt of width minus
+     10pt of padding is a negative available width, which reportlab refuses to lay
+     out at all rather than clamping. */
+  .swatch { width: 5pt; padding: 0; }
+  .sw-PASS { background: #2C6A5D; } .sw-FAIL { background: #A93B28; }
+  .sw-NEEDS_REVIEW { background: #A67C2E; } .sw-NA { background: #C9CCC8; }
+
+  .finding { border-top: 0.4pt solid #C9CCC8; }
+  .note  { color: #4A4F54; }
+  .quote { background: #EBEDE9; padding: 2pt 4pt; }
+
+  .override { background: #F1E9D8; border-left: 2pt solid #A67C2E; padding: 4pt 6pt; }
+
+  .disclaimer { background: #EBEDE9; padding: 6pt 8pt; font-size: 7.5pt; color: #4A4F54; }
+  .footer { font-size: 6.5pt; color: #6E7378; }
+</style>
+</head>
+<body>
+
+{# ------------------------------------------------------------------ masthead #}
+<table class="masthead">
+  <tr>
+    <td style="width:64%">
+      <div class="eyebrow">Legal Metrology (Packaged Commodities) Rules, 2011</div>
+      <h1>Compliance report</h1>
+      <div style="color:#C9CCC8; padding-top:2pt">
+        {{ scan.product_name or "Unnamed product" }}
+      </div>
+    </td>
+    <td style="width:36%; text-align:right">
+      <div class="eyebrow">Scan</div>
+      <div class="mono" style="color:#F4F5F2">{{ scan.scan_id }}</div>
+      <div class="eyebrow" style="padding-top:3pt">Generated</div>
+      <div class="mono" style="color:#F4F5F2">{{ generated_at }}</div>
+    </td>
+  </tr>
+</table>
+
+{# ------------------------------------------------------------------- verdict #}
+<table class="section">
+  <tr>
+    <td class="verdict-{{ scan.assessment.verdict }}"
+        style="width:34%; padding:8pt 10pt">
+      <div class="eyebrow" style="color:#F4F5F2">Verdict</div>
+      <div style="font-size:13pt; font-weight:bold">
+        {{ scan.assessment.verdict.replace("_", " ") }}
+      </div>
+      {% if scan.assessment.overridden %}
+        <div style="font-size:7pt; padding-top:2pt">
+          after {{ scan.assessment.overridden }} officer decision(s)
+        </div>
+      {% endif %}
+    </td>
+    <td style="width:66%; padding-left:10pt">
+      {# The score is a calibrated reading, never a bare number and never a gauge. #}
+      <div class="k">Compliance score</div>
+      {% if scan.assessment.score is none %}
+        <div class="v" style="padding-top:2pt">
+          <strong>Not scored.</strong> No rule could be decided from these images, so
+          there is no reading to give.
+        </div>
+      {% else %}
+        {{ score_scale(scan.assessment.score, pass_threshold) }}
+        <div class="v" style="padding-top:2pt">
+          <span class="mono" style="font-size:11pt">{{ "%.1f"|format(scan.assessment.score) }}</span>
+          <span class="note"> / 100 over
+          {{ scan.assessment.rules_decided }} of {{ scan.assessment.rules_applicable }}
+          applicable rules decided</span>
+        </div>
+      {% endif %}
+      {% if scan.assessment.overridden %}
+        <div class="note" style="padding-top:3pt; font-size:7.5pt">
+          The software found
+          <strong>{{ scan.assessment.automated_verdict.replace("_", " ") }}</strong>
+          {%- if scan.assessment.automated_score is not none %}
+            at {{ "%.1f"|format(scan.assessment.automated_score) }}/100{% endif %}.
+          Officer decisions are recorded against each finding below.
+        </div>
+      {% endif %}
+    </td>
+  </tr>
+</table>
+
+{# ----------------------------------------------------------------- provenance #}
+<table class="section rule-top">
+  <tr>
+    <td style="width:20%"><div class="k">Ruleset</div>
+        <div class="v mono">{{ scan.ruleset_version }}</div></td>
+    <td style="width:20%"><div class="k">Scan date</div>
+        <div class="v mono">{{ scan.scan_date }}</div></td>
+    <td style="width:20%"><div class="k">Channel</div>
+        <div class="v">{{ scan.channel }}</div></td>
+    <td style="width:40%"><div class="k">Extractor</div>
+        <div class="v mono">{{ scan.extractor_version }}</div></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="hair">
+      <div class="k">Scale reference</div>
+      <div class="v">
+        {% if scan.calibration.calibrated %}
+          {{ scan.calibration.source }} ·
+          <span class="mono">{{ "%.5f"|format(scan.calibration.mm_per_px) }}</span> mm/px
+        {% else %}
+          <span class="s-NEEDS_REVIEW">None in frame</span>
+        {% endif %}
+      </div>
+    </td>
+    <td colspan="2" class="hair">
+      <div class="k">Principal display panel</div>
+      <div class="v">
+        {% if scan.calibration.pdp_area_cm2 %}
+          <span class="mono">{{ "%.0f"|format(scan.calibration.pdp_area_cm2) }}</span> cm²
+          <span class="note">({{ scan.calibration.panel_method }})</span>
+        {% else %}
+          <span class="note">Not determined</span>
+        {% endif %}
+      </div>
+    </td>
+  </tr>
+</table>
+
+{% if not scan.calibration.calibrated %}
+<table class="section">
+  <tr><td class="disclaimer">
+    <strong>No millimetre measurement was possible.</strong>
+    No object of known size was found in these photographs, so character heights could
+    not be recovered and every Rule 8 finding below is left for an officer rather than
+    decided. Re-photograph the pack with the printable scale card, an ID-1 card, or a
+    ₹5 or ₹10 coin lying flat beside it.
+  </td></tr>
+</table>
+{% endif %}
+
+{% if scan.notes %}
+<table class="section">
+  <tr><td class="disclaimer">
+    <strong>What this scan could not do</strong>
+    {% for note in scan.notes %}<div style="padding-top:2pt">— {{ note }}</div>{% endfor %}
+  </td></tr>
+</table>
+{% endif %}
+
+{# ------------------------------------------------------------------- evidence #}
+{% if evidence_images %}
+<div class="section rule-top" style="padding-top:6pt">
+  <div class="eyebrow">Evidence</div>
+  <h2>The photographs these findings were read from</h2>
+</div>
+<table>
+  <tr>
+    {% for image in evidence_images %}
+      <td style="width:{{ (100 / evidence_images|length)|round|int }}%">
+        <img src="{{ image.src }}" style="width:100%"/>
+        <div class="note" style="font-size:7pt; padding-top:2pt">
+          {{ image.kind }} · <span class="mono">{{ image.image_id[:8] }}</span>
+          {% if image.annotated %} · boxes mark the cited declarations{% endif %}
+        </div>
+      </td>
+    {% endfor %}
+  </tr>
+</table>
+{% endif %}
+
+{# ------------------------------------------------------------- findings ledger #}
+<div class="section rule-top" style="padding-top:6pt">
+  <div class="eyebrow">Findings</div>
+  <h2>{{ decided_findings|length }} rules assessed
+      {%- if na_findings %}, {{ na_findings|length }} not applicable{% endif %}</h2>
+</div>
+
+<table>
+{% for finding in decided_findings %}
+  <tr class="finding">
+    <td class="swatch sw-{{ finding.status }}"></td>
+    <td style="width:26%">
+      <div class="mono" style="font-size:7.5pt">{{ finding.rule_id }}</div>
+      <div class="note" style="font-size:7pt">{{ finding.citation }}</div>
+      <div class="note" style="font-size:7pt">{{ finding.severity }}</div>
+    </td>
+    <td>
+      <div>
+        <span class="s-{{ finding.status }}">{{ finding.status.replace("_", " ") }}</span>
+        <span style="padding-left:4pt">{{ finding.title }}</span>
+      </div>
+      <div class="v" style="padding-top:2pt">{{ finding.message }}</div>
+
+      {% if finding.measure %}
+        <div style="padding-top:4pt">{{ ruler(finding.measure) }}</div>
+      {% endif %}
+
+      {% if finding.evidence.located and finding.evidence.raw_text %}
+        <div style="padding-top:3pt">
+          <span class="k">Read as</span>
+          <div class="quote mono" style="font-size:7.5pt">{{ finding.evidence.raw_text }}</div>
+          <div class="note" style="font-size:7pt; padding-top:1pt">
+            confidence <span class="mono">{{ "%.2f"|format(finding.evidence.confidence) }}</span>
+            {%- if finding.evidence.image_id %} · image
+            <span class="mono">{{ finding.evidence.image_id[:8] }}</span>{% endif %}
+          </div>
+        </div>
+      {% elif finding.status == "FAIL" and finding.evidence.note %}
+        <div class="note" style="padding-top:3pt; font-size:7.5pt">
+          {{ finding.evidence.note }}
+        </div>
+      {% endif %}
+
+      {% if finding.remediation %}
+        <div style="padding-top:3pt"><span class="k">To correct</span>
+          <div class="v">{{ finding.remediation }}</div></div>
+      {% endif %}
+
+      {% if finding.override %}
+        <div class="override" style="margin-top:4pt">
+          <div class="k">Officer decision</div>
+          <div class="v">
+            Recorded as <strong>{{ finding.override.original_status }}</strong> by the
+            software; set to <strong>{{ finding.status }}</strong> by an officer.
+          </div>
+          <div class="v" style="padding-top:2pt">“{{ finding.override.reason }}”</div>
+          <div class="note mono" style="font-size:7pt; padding-top:1pt">
+            {{ finding.override.overridden_at }}
+          </div>
+        </div>
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}
+</table>
+
+{% if na_findings %}
+<div class="section">
+  <div class="k">Not applicable to this package</div>
+  <div class="v note">
+    {% for finding in na_findings %}<span class="mono">{{ finding.rule_id }}</span>{% if not loop.last %} · {% endif %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# --------------------------------------------------------------------- footer #}
+<table class="section rule-top">
+  <tr><td class="disclaimer">
+    <strong>This report is decision support, not a legal determination.</strong>
+    Every finding above was produced by automated measurement of photographs and carries
+    the rule it was decided under and the evidence it was decided from. Findings marked
+    <span class="s-NEEDS_REVIEW">NEEDS REVIEW</span> are open questions the images could
+    not settle, not violations. No penalty follows from this document; an officer must
+    verify the package before any action is taken under the Legal Metrology Act, 2009.
+  </td></tr>
+</table>
+
+<div class="footer" style="padding-top:5pt">
+  Scan <span class="mono">{{ scan.scan_id }}</span> ·
+  ruleset <span class="mono">{{ scan.ruleset_version }}</span> ·
+  generated {{ generated_at }}{% if generated_by %} by {{ generated_by }}{% endif %} ·
+  engine <span class="mono">{{ engine }}</span>
+</div>
+
+</body>
+</html>

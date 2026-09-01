@@ -1,0 +1,27 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: runs the real OCR engine; excluded from the fast loop with -m 'not slow'",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+python_version = "3.13"
+packages = ["app"]
+
+[[tool.mypy.overrides]]
+# Ship no type information of their own; the wrappers around them are annotated.
+module = ["rapidocr.*", "cv2.*", "weasyprint.*", "docx.*", "xhtml2pdf.*", "reportlab.*", "fontTools.*", "pypdf.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+# Migration bodies are written by `alembic revision --autogenerate`. Reformatting them
+# by hand makes them differ from what the next autogenerate produces, which turns a
+# real schema diff into a formatting diff.
+extend-exclude = ["alembic/versions"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+ignore = ["B008"]  # FastAPI's Depends() in defaults is the documented idiom

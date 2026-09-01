@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" role="img"
+     aria-label="Light falling on the pack from the side gives an even read; light bouncing straight back into the lens creates a glare patch that hides declarations.">
+  <title>Light the pack from the side, not straight on</title>
+  <rect width="420" height="260" fill="#F4F5F2"/>
+
+  <!-- correct: oblique light -->
+  <g stroke="#16191C" fill="none" stroke-width="1.4">
+    <rect x="80" y="30" width="42" height="24" fill="#16191C"/>
+    <circle cx="101" cy="42" r="6.5" fill="#F4F5F2"/>
+    <path d="M101 58 V148" stroke="#A67C2E" stroke-width="1.1" stroke-dasharray="4 4"/>
+    <rect x="52" y="148" width="98" height="22" fill="#FFFFFF"/>
+    <path d="M28 176 H176"/>
+  </g>
+  <!-- light arriving from the side -->
+  <g stroke="#A67C2E" stroke-width="1.3" fill="none">
+    <path d="M22 66 L74 140"/>
+    <path d="M74 140 l-11 -3 m11 3 l-3 -11"/>
+  </g>
+  <text x="101" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#2C6A5D">EVEN ACROSS THE PANEL</text>
+  <text x="101" y="222" text-anchor="middle" font-family="IBM Plex Sans, sans-serif"
+        font-size="11" fill="#4A4F54">Every line readable</text>
+
+  <g stroke="#C9CCC8" stroke-width="1"><path d="M210 40 V224"/></g>
+
+  <!-- wrong: light bouncing back into the lens -->
+  <g stroke="#16191C" fill="none" stroke-width="1.4">
+    <rect x="298" y="30" width="42" height="24" fill="#16191C"/>
+    <circle cx="319" cy="42" r="6.5" fill="#F4F5F2"/>
+    <rect x="270" y="148" width="98" height="22" fill="#FFFFFF"/>
+    <path d="M246 176 H394"/>
+  </g>
+  <!-- specular bounce -->
+  <g stroke="#A93B28" stroke-width="1.3" fill="none">
+    <path d="M258 62 L312 142"/>
+    <path d="M312 142 L340 66"/>
+    <path d="M340 66 l-2 11 m2 -11 l9 6"/>
+  </g>
+  <!-- the blown-out patch on the panel -->
+  <rect x="296" y="148" width="42" height="22" fill="#A93B28" opacity="0.22"/>
+  <g stroke="#A93B28" stroke-width="2.2" fill="none">
+    <path d="M368 44 L386 62 M386 44 L368 62"/>
+  </g>
+  <text x="319" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#A93B28">GLARE OVER THE TEXT</text>
+  <text x="319" y="222" text-anchor="middle" font-family="IBM Plex Sans, sans-serif"
+        font-size="11" fill="#4A4F54">A blown-out patch reads as nothing</text>
+</svg>

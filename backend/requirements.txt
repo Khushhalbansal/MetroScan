@@ -1,0 +1,62 @@
+# --- web ---
+fastapi==0.118.0
+uvicorn[standard]==0.37.0
+python-multipart==0.0.20
+pydantic==2.11.9
+pydantic-settings==2.11.0
+
+# --- data ---
+SQLAlchemy==2.0.43
+alembic==1.16.5
+psycopg[binary]==3.2.10          # postgres in prod; sqlite is the dev default
+
+# --- auth ---
+pyjwt==2.10.1
+argon2-cffi==25.1.0
+email-validator==2.2.0          # backs pydantic's EmailStr; not pulled in by default
+
+# --- rules / config ---
+PyYAML==6.0.2
+
+# --- imaging + ocr ---
+pillow==11.3.0
+numpy==2.2.6
+rapidocr==3.4.5              # PP-OCRv4 weights on onnxruntime; the 3.x line supports py3.13
+onnxruntime==1.29.0
+#
+# Exactly one OpenCV distribution may be installed — they all provide the `cv2` module
+# and installing two leaves whichever landed last on sys.path. It must be a *contrib*
+# build, because cv2.aruco (scale-card detection in app/pipeline/scale.py) ships only
+# there, and headless, because the server has no GUI libraries.
+#
+# rapidocr declares plain `opencv-python`; that requirement is deliberately overridden
+# here. `pip check` will report it as unsatisfied. This is expected — the contrib build
+# is a superset and satisfies every import rapidocr makes. Install with:
+#     pip install -r requirements.txt
+#     pip uninstall -y opencv-python        # if rapidocr pulled it in
+opencv-contrib-python-headless==4.12.0.88
+
+# --- reports ---
+#
+# WeasyPrint is the intended renderer and the one the deployment image should install.
+# It binds to Pango/GObject, which are native libraries: on Linux install
+# `libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libffi8`, and on Windows the
+# GTK3 runtime. Without them `import weasyprint` raises OSError, not ImportError.
+weasyprint==66.0
+#
+# The fallback, used automatically when WeasyPrint's native libraries are absent —
+# which is the normal state of a Windows development machine. Pure Python, so a report
+# can always be produced; it renders a narrower slice of CSS, which is why the report
+# template sticks to tables and background colours. See app/reports/pdf.py.
+xhtml2pdf==0.2.17
+python-docx==1.2.0
+jinja2==3.1.6
+
+# --- vlm (optional, behind the Extractor interface) ---
+anthropic==0.69.0
+httpx==0.28.1
+
+# --- dev ---
+pytest==8.4.2
+pytest-asyncio==1.2.0
+ruff==0.13.2

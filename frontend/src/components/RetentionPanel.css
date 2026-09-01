@@ -1,0 +1,83 @@
+/*
+  Retention sits between the verdict and the evidence: a case-management judgement,
+  kept visually distinct from the findings ledger so it never reads as one more rule.
+  Flat, hairline-bordered, brass only when the scan is actually eligible for deletion.
+*/
+
+.retention {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--ink-200);
+  border-left-width: 2.5px;
+  border-radius: var(--radius);
+  background: var(--ink-050);
+}
+
+.retention--open {
+  border-left-color: var(--seal);
+}
+.retention--closed {
+  border-left-color: var(--ink-300);
+}
+.retention--undecided {
+  border-left-color: var(--ink-400);
+}
+.retention--eligible {
+  border-left-color: var(--brass);
+  background: var(--brass-tint);
+}
+
+.retention__summary {
+  margin: 0.35rem 0 0;
+  font-size: var(--step-0);
+  max-width: 62ch;
+}
+
+.retention__detail {
+  margin: 0.3rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+}
+
+.retention__ask,
+.retention__confirm {
+  margin-top: 0.8rem;
+}
+
+.retention__question {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  font-size: var(--step-0);
+}
+
+.retention__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.retention__confirm-text {
+  margin: 0 0 0.55rem;
+  font-size: var(--step--1);
+  max-width: 60ch;
+}
+
+.retention__error {
+  margin: 0.6rem 0 0;
+  font-size: var(--step--1);
+  color: var(--oxide);
+}
+
+/* Doubled class, same reason as ImageStrip.css: Examination.css defines a plain
+   `.button` after this file and would otherwise flatten the destructive button. */
+.button.button--danger {
+  background: var(--oxide);
+  border-color: var(--oxide);
+  color: var(--bone);
+}
+
+.button.button--danger:hover:not(:disabled) {
+  background: #8e3122;
+  border-color: #8e3122;
+  color: var(--bone);
+}

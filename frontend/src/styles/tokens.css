@@ -1,0 +1,234 @@
+/*
+  The tokens from docs/design-direction.md. Every colour and face in the app comes
+  from here; if a component can't trace a value back to this file, it's wrong.
+
+  Legal Metrology is the one department whose entire remit is measurement — bell
+  weights, beam balances, verification stamps, and above all *tolerance*, the legally
+  permissible error around a declared value. So the vocabulary is instruments and
+  limits, not dashboards.
+*/
+
+:root {
+  /* --- colour: six values, one job each ------------------------------------ */
+  --chassis: #16191c; /* instrument body: rail, mastheads. never the page ground */
+  --bone: #f4f5f2; /* page ground. cool lab-paper white, green-shifted, NOT cream */
+  --seal: #23406b; /* seal ink: brand, and every interactive affordance */
+  --brass: #a67c2e; /* the measure: graduations, limit lines, NEEDS_REVIEW */
+  --patina: #2c6a5d; /* verdigris: PASS / compliant */
+  --oxide: #a93b28; /* oxide red: FAIL / violation */
+
+  /* Neutrals are tints of chassis, not grey — they stay slightly blue so bone
+     reads warm against them. */
+  --ink-900: #16191c;
+  --ink-700: #33383d;
+  --ink-500: #5c6268;
+  --ink-400: #7d838a;
+  --ink-300: #a8adb3;
+  --ink-200: #c9ccc8;
+  --ink-100: #e3e5e1;
+  --ink-050: #ecede9;
+
+  --seal-tint: #eaeef5;
+  --brass-tint: #f5ecd9;
+  --patina-tint: #e4efec;
+  --oxide-tint: #f7e6e2;
+
+  /* Seal ink, pressed. The one darker step the primary affordance takes on
+     hover/active — previously an inline literal in Examination.css. */
+  --seal-pressed: #1b3155;
+
+  /* --- type: three roles --------------------------------------------------- */
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "IBM Plex Sans Devanagari", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Display is pushed wide — engineered signage, the silkscreen on an instrument
+     panel — and used with restraint: page titles, the score reading, eyebrows. */
+  --display-width: 118;
+
+  --step--2: 0.6875rem;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2rem;
+  --step-4: 2.75rem;
+
+  /* --- layout: "the rail and the bench" ------------------------------------ */
+  --rail-collapsed: 72px;
+  --rail-expanded: 240px;
+  --gutter: clamp(1rem, 3vw, 2.5rem);
+
+  /* The corner of a printed form, not a pill. */
+  --radius: 2px;
+
+  /* Flat surfaces. No gradients, no glass, no shadow theatre. The one shadow in
+     the system lifts a sticky panel off the bench, and it is nearly invisible. */
+  --lift: 0 1px 0 rgb(22 25 28 / 0.06);
+
+  /* --- motion: the instrument's own movement (design-direction.md v2) --------
+     `--tick` is the functional micro-interaction (hover, focus, disclosure).
+     `--sweep` is a value settling to its reading — one small overshoot, no more.
+     `--shift` is the shared-axis route move. Nothing here loops. */
+  --ease-tick: cubic-bezier(0.2, 0, 0.2, 1);
+  --ease-settle: cubic-bezier(0.16, 0.84, 0.28, 1);
+  --tick: 120ms var(--ease-tick);
+  --sweep: 620ms var(--ease-settle);
+  --shift: 240ms var(--ease-tick);
+
+  /* Ceilings from the v2 amendment. A component may use less, never more. */
+  --parallax-max: 12px;
+  --tilt-max: 6deg;
+
+  /* --- breakpoints: named, so every view bends at the same places -----------
+     CSS can't read a custom property inside @media, so these are the contract,
+     not the mechanism — every `@media (max-width: …)` in the app uses one of
+     these five values and nothing else. 480 phone · 640 rail→bottom-bar ·
+     768 tablet · 1024 bench splits · 1280 wide. */
+  --bp-sm: 480px;
+  --bp-bar: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+
+  /* Safe-area insets for the notch / home indicator when installed or in
+     fullscreen on a phone. Zero on every desktop. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Headings shrink on a phone so a page title never wraps to three lines on a
+   360px screen; body and data sizes stay fixed for legibility. The floor of each
+   clamp is the old fixed value one step down, the ceiling is unchanged. */
+@media (max-width: 640px) {
+  :root {
+    --step-2: clamp(1.25rem, 1rem + 1.5vw, 1.5rem);
+    --step-3: clamp(1.5rem, 1rem + 3vw, 2rem);
+    --step-4: clamp(2rem, 1.25rem + 4.5vw, 2.75rem);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bone);
+  color: var(--ink-900);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+}
+
+/* Every number is mono: millimetres, MRP, rule ids, scan ids, confidences.
+   Numerals in mono read as an instrument readout and column-align for scanning. */
+.data {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* A visible seal-ink focus ring on everything interactive, never removed. */
+:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+a {
+  color: var(--seal);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/*
+  The graduation tick as the structural rule: uneven ticks, tall at tens, short
+  between. It is the same instrument as the Rule 8 ruler, used as a divider.
+*/
+.graduated {
+  height: 9px;
+  border-top: 1px solid var(--ink-200);
+  background-image: repeating-linear-gradient(
+      to right,
+      var(--ink-300) 0 1px,
+      transparent 1px 40px
+    ),
+    repeating-linear-gradient(to right, var(--ink-200) 0 1px, transparent 1px 8px);
+  background-size:
+    100% 9px,
+    100% 5px;
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Collapse the duration tokens too, so an inline `transition: var(--sweep)` or a
+     parallax transform driven off these also goes still. JS paths additionally
+     gate on usePrefersReducedMotion(). */
+  :root {
+    --tick: 0.001ms linear;
+    --sweep: 0.001ms linear;
+    --shift: 0.001ms linear;
+    --parallax-max: 0px;
+    --tilt-max: 0deg;
+  }
+}

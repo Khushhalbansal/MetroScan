@@ -1,0 +1,103 @@
+.score {
+  min-width: 0;
+}
+
+.score__instrument {
+  position: relative;
+  padding-bottom: 1.15rem;
+}
+
+.score__graduations {
+  position: relative;
+  height: 13px;
+}
+
+.score__tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 6px;
+  background: var(--ink-300);
+}
+
+.score__tick--major {
+  height: 13px;
+  background: var(--ink-700);
+}
+
+.score__track {
+  position: relative;
+  height: 14px;
+  border-top: 1.5px solid var(--chassis);
+  background: var(--ink-050);
+}
+
+.score__bar {
+  height: 100%;
+  transition: width 720ms cubic-bezier(0.16, 0.84, 0.28, 1);
+}
+
+.score__bar--met {
+  background: var(--patina);
+}
+.score__bar--short {
+  background: var(--oxide);
+}
+
+.score__limit {
+  position: absolute;
+  top: -7px;
+  bottom: -6px;
+  width: 2.5px;
+  background: var(--brass);
+}
+
+.score__limit-label {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  color: var(--brass);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.score__reading {
+  margin: 0.4rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+}
+
+.score__value {
+  font-size: var(--step-3);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.score__value.is-met {
+  color: var(--patina);
+}
+.score__value.is-short {
+  color: var(--oxide);
+}
+
+.score__denominator {
+  color: var(--ink-400);
+}
+
+.score--unscored .score__none {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  background: var(--brass-tint);
+  border-left: 2.5px solid var(--brass);
+  font-size: var(--step--1);
+}
+
+.score__coverage {
+  color: var(--ink-500);
+}
+
+.score--unscored .score__coverage {
+  display: block;
+  margin: 0.35rem 0 0;
+  font-size: var(--step--1);
+}

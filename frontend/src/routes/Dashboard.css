@@ -1,0 +1,377 @@
+.dash__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dash__title {
+  font-size: var(--step-3);
+  margin-top: 0.15rem;
+}
+
+.dash__window {
+  margin: 0.3rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-400);
+}
+
+.dash__windows {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.dash__window-chip {
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius);
+  background: transparent;
+  padding: 0.32rem 0.7rem;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+  cursor: pointer;
+  transition:
+    color var(--tick),
+    border-color var(--tick),
+    background var(--tick);
+}
+
+.dash__window-chip:hover {
+  color: var(--chassis);
+  border-color: var(--ink-400);
+}
+
+.dash__window-chip.is-on {
+  background: var(--chassis);
+  border-color: var(--chassis);
+  color: var(--bone);
+}
+
+.dash__empty {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--ink-050);
+  border-left: 2.5px solid var(--seal);
+  max-width: 52ch;
+}
+
+/* --- readings ---------------------------------------------------------------- */
+
+.dash__readings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1px;
+  background: var(--ink-200);
+  border: 1px solid var(--ink-200);
+  margin: 1.25rem 0;
+}
+
+.reading {
+  background: var(--bone);
+  padding: 0.9rem 1rem 1rem;
+}
+
+.reading__label {
+  margin: 0 0 0.3rem;
+}
+
+.reading__value {
+  margin: 0;
+  font-size: var(--step-3);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.reading__value--oxide {
+  color: var(--oxide);
+}
+.reading__value--brass {
+  color: var(--brass);
+  font-family: var(--body);
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+.reading__value--patina {
+  color: var(--patina);
+}
+
+.reading__note {
+  margin: 0.35rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-500);
+}
+
+/* --- panels ------------------------------------------------------------------ */
+
+.dash__panel {
+  border-top: 1.5px solid var(--chassis);
+  padding: 0.9rem 0 1.4rem;
+}
+
+.dash__panel--attention {
+  border-top-color: var(--brass);
+}
+
+.dash__panel-title {
+  font-size: var(--step-1);
+  margin: 0 0 0.7rem;
+}
+
+.dash__lede {
+  margin: 0 0 0.7rem;
+  font-size: var(--step--1);
+  max-width: 68ch;
+}
+
+.dash__two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+}
+
+/* --- the outcome bar --------------------------------------------------------- */
+
+.bar__track {
+  display: flex;
+  height: 14px;
+  background: var(--ink-100);
+  border-top: 1.5px solid var(--chassis);
+}
+
+.bar__part {
+  display: block;
+  height: 100%;
+}
+
+.bar__part--compliant {
+  background: var(--patina);
+}
+.bar__part--fail {
+  background: var(--oxide);
+}
+.bar__part--inconclusive {
+  background: var(--brass);
+}
+
+.bar__caption {
+  margin: 0.3rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-500);
+}
+
+.legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+}
+
+.legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+}
+
+.legend__swatch--compliant {
+  background: var(--patina);
+}
+.legend__swatch--fail {
+  background: var(--oxide);
+}
+.legend__swatch--inconclusive {
+  background: var(--brass);
+}
+
+/* --- violations -------------------------------------------------------------- */
+
+.violations {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.violations__row {
+  border-top: 1px solid var(--ink-200);
+}
+
+.violations__row:last-child {
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.violations__link {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--tick);
+}
+
+.violations__link:hover {
+  background: var(--ink-050);
+}
+
+.violations__names {
+  min-width: 0;
+}
+
+.violations__title {
+  display: block;
+  font-size: var(--step--1);
+  font-weight: 500;
+}
+
+.violations__meta {
+  display: block;
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+.violations__bar {
+  display: block;
+  height: 9px;
+  background: var(--ink-100);
+}
+
+.violations__fill {
+  display: block;
+  height: 100%;
+  background: var(--oxide);
+}
+
+.violations__count {
+  font-size: var(--step-0);
+  font-weight: 600;
+  color: var(--oxide);
+  min-width: 2ch;
+  text-align: right;
+}
+
+/* --- table ------------------------------------------------------------------- */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.table th {
+  text-align: left;
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  font-weight: 600;
+  padding: 0 0.5rem 0.35rem;
+  border-bottom: 1px solid var(--ink-300);
+}
+
+.table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--ink-100);
+  vertical-align: middle;
+}
+
+.table__num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table__none {
+  color: var(--brass);
+}
+
+/* --- trend ------------------------------------------------------------------- */
+
+.trend {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 140px;
+  border-bottom: 1.5px solid var(--chassis);
+  padding-bottom: 1px;
+}
+
+.trend__day {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  min-width: 3px;
+  /* Two days of data must not become two enormous slabs filling the panel. A bar is
+     a reading, and a reading that swells to fit the space is not one. */
+  max-width: 44px;
+}
+
+.trend__axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+.trend__stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 2px;
+}
+
+.trend__part {
+  display: block;
+  width: 100%;
+}
+
+.trend__part--compliant {
+  background: var(--patina);
+}
+.trend__part--fail {
+  background: var(--oxide);
+}
+.trend__part--inconclusive {
+  background: var(--brass);
+}
+
+@container bench (max-width: 56rem) {
+  .dash__two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Phone tier: the "most broken rules" rows stop being a 3-column grid and stack;
+   the category table scrolls sideways inside its panel rather than crushing its
+   columns. */
+@container bench (max-width: 34rem) {
+  .dash__readings {
+    grid-template-columns: 1fr 1fr;
+  }
+  .violations__link {
+    grid-template-columns: 1fr auto;
+    gap: 0.2rem 1rem;
+  }
+  .violations__names {
+    grid-column: 1 / -1;
+  }
+  .dash__panel:has(.table) {
+    overflow-x: auto;
+  }
+  .table {
+    min-width: 22rem;
+  }
+}

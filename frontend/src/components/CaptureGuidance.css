@@ -1,0 +1,77 @@
+/* The instruction plate: flat, graduated, numbered because the plates genuinely are
+   a sequence of four checks — the one place the design direction allows numbering. */
+
+.plate-set {
+  margin: 0 0 0.4rem;
+}
+
+.plate-set__toggle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--ink-200);
+  padding: 0.55rem 0.1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.plate-set__toggle:hover .plate-set__toggle-state {
+  color: var(--seal);
+}
+
+.plate-set__toggle-label {
+  color: var(--ink-700);
+}
+
+.plate-set__toggle-state {
+  font-size: var(--step--2);
+  color: var(--ink-500);
+  transition: color var(--tick);
+  white-space: nowrap;
+}
+
+.plates {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem 1.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.plate {
+  min-width: 0;
+}
+
+.plate__figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius);
+  background: var(--bone);
+}
+
+.plate__heading {
+  font-family: var(--body);
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: 0;
+  margin: 0.5rem 0 0.2rem;
+}
+
+.plate__because {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-700);
+}
+
+.plate-set__note {
+  margin: 1rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}

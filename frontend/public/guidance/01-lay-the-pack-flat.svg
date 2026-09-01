@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" role="img"
+     aria-label="Side view. The camera looks straight down at a pack lying flat; an angled pack is marked as wrong.">
+  <title>Lay the pack flat and look straight down at it</title>
+  <rect width="420" height="260" fill="#F4F5F2"/>
+
+  <!-- correct: camera perpendicular to a flat pack -->
+  <g stroke="#16191C" fill="none" stroke-width="1.4">
+    <!-- camera -->
+    <rect x="78" y="26" width="46" height="26" fill="#16191C"/>
+    <circle cx="101" cy="39" r="7" fill="#F4F5F2"/>
+    <!-- sight line -->
+    <path d="M101 56 V150" stroke="#A67C2E" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <!-- bench -->
+    <path d="M28 170 H174"/>
+    <!-- pack, flat -->
+    <rect x="61" y="150" width="80" height="20" fill="#FFFFFF"/>
+    <!-- right-angle mark -->
+    <path d="M101 158 H109 V150" stroke="#A67C2E" stroke-width="1.2"/>
+  </g>
+  <text x="101" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#2C6A5D">SQUARE TO THE PANEL</text>
+  <text x="101" y="218" text-anchor="middle" font-family="IBM Plex Sans, sans-serif"
+        font-size="11" fill="#4A4F54">Every millimetre reads true</text>
+
+  <!-- divider graduation -->
+  <g stroke="#C9CCC8" stroke-width="1">
+    <path d="M210 40 V220"/>
+  </g>
+
+  <!-- wrong: camera oblique to a tilted pack -->
+  <g stroke="#16191C" fill="none" stroke-width="1.4">
+    <rect x="252" y="26" width="46" height="26" fill="#16191C"/>
+    <circle cx="275" cy="39" r="7" fill="#F4F5F2"/>
+    <path d="M275 56 L316 148" stroke="#A93B28" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <path d="M246 170 H392"/>
+    <!-- pack, tilted -->
+    <g transform="rotate(-17 319 158)">
+      <rect x="279" y="148" width="80" height="20" fill="#FFFFFF"/>
+    </g>
+  </g>
+  <!-- oxide cross over the wrong case -->
+  <g stroke="#A93B28" stroke-width="2.2" fill="none">
+    <path d="M356 40 L376 60 M376 40 L356 60"/>
+  </g>
+  <text x="319" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#A93B28">FORESHORTENED</text>
+  <text x="319" y="218" text-anchor="middle" font-family="IBM Plex Sans, sans-serif"
+        font-size="11" fill="#4A4F54">Type measures shorter than it is</text>
+</svg>

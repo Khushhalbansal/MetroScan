@@ -1,0 +1,354 @@
+meta:
+  version: "2022-04-01"
+  effective_date: "2022-04-01"
+  description: >-
+    Legal Metrology (Packaged Commodities) Rules, 2011 as amended to the Unit Sale Price
+    amendment of 02-Nov-2021 (in force 01-Apr-2022) and the Amendment Rules, 2023.
+    Findings produced by this ruleset are decision support for an authorised officer;
+    they are not a legal determination.
+  source: "https://consumeraffairs.gov.in/pages/legal-metrology-act"
+
+# ---------------------------------------------------------------------------
+# Rule 8 — size of letters and numerals.
+# Height required scales with the area of the principal display panel. Two tables:
+# Table I where net quantity is declared by weight/volume, Table II by length/area/number.
+# `raised` applies where the declaration is blown, formed, moulded, embossed or perforated.
+# Boundaries are inclusive of the upper bound (area <= max_cm2).
+# ---------------------------------------------------------------------------
+geometry_tables:
+  table_1:
+    citation: "Rule 8, Table I"
+    basis: [WEIGHT, VOLUME]
+    bands:
+      - { max_cm2: 50, normal_mm: 1.0, raised_mm: 2.0 }
+      - { max_cm2: 100, normal_mm: 1.5, raised_mm: 3.0 }
+      - { max_cm2: 500, normal_mm: 2.0, raised_mm: 4.0 }
+      - { max_cm2: 2500, normal_mm: 4.0, raised_mm: 6.0 }
+      - { max_cm2: null, normal_mm: 6.0, raised_mm: 6.0 }
+  table_2:
+    citation: "Rule 8, Table II"
+    basis: [LENGTH, AREA, NUMBER]
+    bands:
+      - { max_cm2: 100, normal_mm: 1.0, raised_mm: 2.0 }
+      - { max_cm2: 500, normal_mm: 2.0, raised_mm: 4.0 }
+      - { max_cm2: 2500, normal_mm: 4.0, raised_mm: 6.0 }
+      - { max_cm2: null, normal_mm: 6.0, raised_mm: 6.0 }
+
+# ---------------------------------------------------------------------------
+# Rule 26 — exemptions. Evaluated first; when one matches, every rule whose
+# `skip_when_exempt` is true is recorded NA with the exemption cited.
+# ---------------------------------------------------------------------------
+exemptions:
+  - id: SMALL_PACKAGE
+    citation: "Rule 26(a)"
+    description: "Net quantity 10 g / 10 ml or less, other than tobacco products."
+    when: { net_quantity_max: { g: 10, ml: 10 }, category_not_in: [TOBACCO] }
+  - id: FAST_FOOD
+    citation: "Rule 26(b)"
+    description: "Fast food items packed by a restaurant or hotel."
+    when: { category_in: [FAST_FOOD] }
+  - id: BULK_AGRICULTURAL
+    citation: "Rule 26(d)"
+    description: "Agricultural farm produce in packages above 50 kg."
+    when: { net_quantity_min: { kg: 50 }, category_in: [AGRICULTURAL] }
+
+rules:
+  # -- Rule 6(1)(a) — manufacturer / packer / importer identity ---------------
+  - id: MANUFACTURER_NAME_PRESENT
+    title: "Name of manufacturer, packer or importer"
+    citation: "Rule 6(1)(a)"
+    check: presence
+    field: manufacturer_name
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "No manufacturer, packer or importer name found on the package."
+    remediation: "Declare the name of the manufacturer, packer or importer on the label."
+
+  - id: MANUFACTURER_ADDRESS_PRESENT
+    title: "Complete address of manufacturer, packer or importer"
+    citation: "Rule 6(1)(a)"
+    check: presence
+    field: manufacturer_address
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "No complete address found for the manufacturer, packer or importer."
+    remediation: "Declare the complete address, including PIN code, of the manufacturer, packer or importer."
+
+  - id: MANUFACTURER_ADDRESS_COMPLETE
+    title: "Address includes a PIN code"
+    citation: "Rule 6(1)(a)"
+    # Asserts on the PIN the extractor parsed rather than re-matching the raw text.
+    # This was `format` with '\b\d{6}\b', which does not match "Maharashtra422010" —
+    # the ordinary reading when OCR drops a space — so a complete address was reported
+    # incomplete while the extractor had already read the PIN correctly.
+    check: attribute
+    field: manufacturer_address
+    attributes: [pin]
+    severity: MINOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "The manufacturer address has no 6-digit PIN code, so it may be incomplete."
+    remediation: "Include the 6-digit PIN code so the address is a complete one."
+
+  # -- Rule 6(1)(b) — common or generic name ---------------------------------
+  - id: COMMON_NAME_PRESENT
+    title: "Common or generic name of the commodity"
+    citation: "Rule 6(1)(b)"
+    check: presence
+    field: common_name
+    severity: MAJOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "No common or generic name found. A brand name alone does not satisfy this rule."
+    remediation: "Declare what the commodity actually is, in addition to the brand name."
+
+  # -- Rule 6(1)(c) — net quantity -------------------------------------------
+  - id: NET_QUANTITY_PRESENT
+    title: "Net quantity declaration"
+    citation: "Rule 6(1)(c)"
+    check: presence
+    field: net_quantity
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "No net quantity declaration found on the package."
+    remediation: "Declare the net quantity in the standard unit for the commodity."
+
+  - id: NET_QUANTITY_UNIT_VALID
+    title: "Net quantity uses a standard unit"
+    citation: "Rule 6(1)(c) read with Rule 10"
+    check: net_quantity_unit
+    field: net_quantity
+    severity: MAJOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "The net quantity unit is not one of the standard units permitted by the rules."
+    remediation: "Use g, kg, ml, l, cm, m, m² or a count of pieces, as the commodity requires."
+
+  # -- Rule 6(1)(d) — month and year of manufacture --------------------------
+  # Rule 6(10) exempts e-commerce listings from this declaration.
+  - id: MFG_DATE_PRESENT
+    title: "Month and year of manufacture, packing or import"
+    citation: "Rule 6(1)(d)"
+    check: presence
+    field: mfg_date
+    severity: CRITICAL
+    applies_to: [PHYSICAL]
+    skip_when_exempt: true
+    message_fail: "No month and year of manufacture, packing or import found."
+    remediation: "Declare the month and year, for example 'Mfd. 03/2026'."
+    note: "Rule 6(10) does not require this declaration on an e-commerce listing."
+
+  - id: MFG_DATE_FORMAT
+    title: "Manufacture date states month and year"
+    citation: "Rule 6(1)(d)"
+    # Rule 6(1)(d) wants both a month and a year. This used to run a second date
+    # regex over the raw text, independent of the one the extractor had already run.
+    check: attribute
+    field: mfg_date
+    attributes: [month, year]
+    severity: MINOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: true
+    message_fail: "The manufacture date does not clearly state both a month and a year."
+    remediation: "State the month and the year together, for example '03/2026' or 'MAR 2026'."
+
+  # -- Rule 6(1)(e) — maximum retail price -----------------------------------
+  - id: MRP_PRESENT
+    title: "Maximum retail price"
+    citation: "Rule 6(1)(e)"
+    check: presence
+    field: mrp
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "No maximum retail price found."
+    remediation: "Declare the retail sale price as 'MRP ₹<amount> inclusive of all taxes'."
+
+  - id: MRP_INCLUSIVE_OF_TAXES
+    title: "MRP states that it is inclusive of all taxes"
+    citation: "Rule 6(1)(e) read with Rule 2(m)"
+    # The extractor decides this once, looking past intervening lines for the rider;
+    # a regex here re-read the raw text and disagreed with it.
+    check: attribute
+    field: mrp
+    attributes: [inclusive_of_taxes]
+    severity: MAJOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "The price is declared without the words 'inclusive of all taxes'."
+    remediation: "Print the price as 'MRP ₹<amount> inclusive of all taxes'."
+
+  - id: MRP_SINGLE_VALUE
+    title: "Only one retail sale price is declared"
+    citation: "Rule 6(1)(e) read with Rule 18(2)"
+    check: mrp_single_value
+    field: mrp
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "More than one retail sale price appears on the package."
+    remediation: "Declare a single maximum retail price. A dual MRP is not permitted."
+
+  - id: MRP_CURRENCY_MARKED
+    title: "MRP carries a rupee marking"
+    citation: "Rule 6(1)(e)"
+    # Asserts on the marking the extractor captured. This was `format` with
+    # '\bRs\.?\b' against the raw text, which fails on "MRPRs.45.00" — OCR drops the
+    # space between the label and the marking routinely — so a pack that plainly
+    # printed "MRP Rs. 45.00" was reported as carrying no rupee marking.
+    check: attribute
+    field: mrp
+    attributes: [currency_mark]
+    severity: MINOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: false
+    message_fail: "The price has no ₹, Rs. or INR marking."
+    remediation: "Prefix the amount with ₹, Rs. or INR."
+
+  # -- Rule 6(1)(f) — consumer care -------------------------------------------
+  - id: CONSUMER_CARE_PRESENT
+    title: "Consumer care contact"
+    citation: "Rule 6(1)(f)"
+    check: any_present
+    fields: [consumer_care_name, consumer_care_phone, consumer_care_email, consumer_care_address]
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "No consumer care contact found for grievance redressal."
+    remediation: "Declare the name, address, telephone number and email of the person to contact with a complaint."
+
+  - id: CONSUMER_CARE_COMPLETE
+    title: "Consumer care contact is complete"
+    citation: "Rule 6(1)(f)"
+    check: all_present
+    fields: [consumer_care_name, consumer_care_address, consumer_care_phone, consumer_care_email]
+    severity: MAJOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "The consumer care contact is incomplete."
+    remediation: "Declare all four of name, address, telephone number and email."
+
+  - id: CONSUMER_CARE_EMAIL_VALID
+    title: "Consumer care email is well formed"
+    citation: "Rule 6(1)(f)"
+    check: attribute
+    field: consumer_care_email
+    attributes: [address]
+    severity: MINOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "The consumer care email address is not a valid address."
+    remediation: "Print a working email address for consumer complaints."
+
+  # -- Rule 6(1) — imported packages ------------------------------------------
+  - id: COUNTRY_OF_ORIGIN_PRESENT
+    title: "Country of origin for imported packages"
+    citation: "Rule 6(1) proviso"
+    check: presence
+    field: country_of_origin
+    severity: CRITICAL
+    applies_to: [PHYSICAL, ECOMMERCE]
+    only_when: { is_imported: true }
+    skip_when_exempt: true
+    message_fail: "No country of origin declared on an imported package."
+    remediation: "Declare the country of origin of the commodity."
+
+  # -- Rule 6(11) — unit sale price -------------------------------------------
+  - id: UNIT_SALE_PRICE_PRESENT
+    title: "Unit sale price"
+    citation: "Rule 6(11)"
+    check: unit_sale_price
+    field: unit_sale_price
+    severity: MAJOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: true
+    message_fail: "No unit sale price declared."
+    remediation: "Declare the unit sale price, for example '₹0.45 per g' or '₹450 per kg'."
+    note: >-
+      Not required where the unit sale price equals the retail sale price, nor for
+      combination, group or multi-piece packages (Amendment Rules, 2023). Rule 6(10)
+      does not require it on an e-commerce listing.
+
+  # -- Rule 8 — geometry ------------------------------------------------------
+  - id: FONT_HEIGHT_NET_QUANTITY
+    title: "Height of net quantity numerals"
+    citation: "Rule 8, Table I / Table II"
+    check: glyph_height
+    field: net_quantity
+    severity: MAJOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: false
+    message_fail: "The net quantity numerals are shorter than the height the rules require."
+    remediation: "Reprint the net quantity at or above the required height for this panel area."
+
+  - id: FONT_HEIGHT_MINIMUM
+    title: "Minimum height of declaration lettering"
+    citation: "Rule 8"
+    check: glyph_height_minimum
+    fields: [mrp, mfg_date, consumer_care_phone, manufacturer_name]
+    min_mm: 1.0
+    min_mm_raised: 2.0
+    severity: MAJOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: false
+    message_fail: "Declaration lettering is below the 1 mm minimum height."
+    remediation: "Set every mandatory declaration at 1 mm or taller, or 2 mm if it is embossed or moulded."
+
+  - id: FONT_WIDTH_RATIO
+    title: "Letter width is at least one third of its height"
+    citation: "Rule 8 proviso"
+    check: glyph_width_ratio
+    fields: [net_quantity, mrp]
+    min_ratio: 0.3333
+    severity: MINOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: false
+    message_fail: "Lettering is condensed below one third of its height."
+    remediation: "Widen the type so each character is at least one third as wide as it is tall."
+
+  # -- Rule 6(2) / Rule 9 — placement and honesty -----------------------------
+  - id: DECLARATIONS_GROUPED
+    title: "Mandatory declarations are grouped together"
+    citation: "Rule 6(2)"
+    check: declaration_grouping
+    severity: MINOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: true
+    message_fail: "The mandatory declarations are scattered rather than given as a single group."
+    remediation: "Group all mandatory declarations together on one panel."
+
+  - id: NO_MISLEADING_DECLARATION
+    title: "No false or misleading declaration"
+    citation: "Rule 9"
+    check: semantic_flag
+    flag: misleading_claim
+    severity: MAJOR
+    applies_to: [PHYSICAL, ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "The package carries a claim that may be misleading or unverifiable."
+    remediation: "Remove or substantiate the claim."
+
+  - id: DECLARATIONS_LEGIBLE
+    title: "Declarations are conspicuous and legible"
+    citation: "Rule 9(2)"
+    check: legibility
+    severity: MAJOR
+    applies_to: [PHYSICAL]
+    skip_when_exempt: true
+    message_fail: "One or more declarations were read with low confidence and may not be legible."
+    remediation: "Print declarations in a colour that contrasts with the ground and keep them unobscured."
+
+  # -- Rule 6(10) — e-commerce listings ---------------------------------------
+  - id: ECOMMERCE_DECLARATIONS_DISPLAYED
+    title: "Listing displays every mandatory declaration"
+    citation: "Rule 6(10)"
+    check: all_present
+    fields: [manufacturer_name, manufacturer_address, common_name, net_quantity, mrp]
+    severity: CRITICAL
+    applies_to: [ECOMMERCE]
+    skip_when_exempt: true
+    message_fail: "The listing does not display every declaration required by Rule 6(1)."
+    remediation: "Display all Rule 6(1) declarations on the listing page, except the month and year of manufacture."

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light" />
+    <!-- The rail chassis colour, so the phone status bar / address bar matches the
+         instrument body rather than flashing white on navigation. -->
+    <meta name="theme-color" content="#16191c" />
+    <meta
+      name="description"
+      content="MetroScan — a compliance bench for Legal Metrology enforcement. Photograph a packaged commodity; get the mandatory declarations checked against the Packaged Commodities Rules, 2011."
+    />
+    <title>MetroScan — Legal Metrology compliance bench</title>
+
+    <!--
+      Archivo for display (pushed wide, engineered signage), IBM Plex Sans + Devanagari
+      for body, IBM Plex Mono for every number. A government deployment should
+      self-host these rather than depend on a CDN reaching a district office; the
+      stacks below all fall back to system faces if the request never lands.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@110..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

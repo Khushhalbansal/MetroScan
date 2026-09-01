@@ -1,0 +1,146 @@
+{#
+  The Measure, in the CSS subset both PDF engines agree on.
+
+  A ruler is a row of cells, so it is built as one: each half-millimetre is a table
+  cell, the tall cells fall on whole millimetres, and the brass limit line is a cell
+  with a left border at the required height. The oxide bar is a second table whose first
+  cell is a percentage width equal to the measurement.
+
+  Percentages, not absolute widths, so the same markup holds at any column width.
+#}
+
+{% macro ruler(m) %}
+<table style="width:100%; border-collapse:collapse">
+  {# graduations — tall at whole millimetres, short between.
+
+     Every cell here sets padding:0 explicitly. The body stylesheet gives td 5pt of
+     horizontal padding, which across a dozen graduation cells exceeds the width of the
+     column the ruler sits in — reportlab then computes a negative available width and
+     refuses to lay the table out at all. #}
+  <tr>
+    {% for tick in m.ticks %}
+      {% if not loop.last %}
+        <td style="padding:0; height:{{ 7 if tick.major else 4 }}pt;
+                   border-left:0.5pt solid {{ '#16191C' if tick.major else '#9AA0A6' }};
+                   vertical-align:bottom"></td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+
+  {# the scale line #}
+  <tr><td colspan="{{ m.ticks|length - 1 }}"
+          style="border-top:0.8pt solid #16191C; height:0; padding:0"></td></tr>
+
+  {# the measured index, and the shortfall shaded in oxide #}
+  <tr>
+    <td colspan="{{ m.ticks|length - 1 }}" style="padding:0">
+      <table style="width:100%; border-collapse:collapse">
+        <tr>
+          {% if m.measured_position is not none %}
+            <td style="width:{{ m.measured_position }}%;
+                       background:{{ '#2C6A5D' if m.compliant else '#A93B28' }};
+                       height:7pt; padding:0"></td>
+            <td style="padding:0; height:7pt"></td>
+          {% else %}
+            <td style="padding:0; height:7pt"></td>
+          {% endif %}
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  {# the brass limit line, at the height the rule requires #}
+  <tr>
+    <td colspan="{{ m.ticks|length - 1 }}" style="padding:0">
+      <table style="width:100%; border-collapse:collapse">
+        <tr>
+          <td style="width:{{ m.required_position }}%; padding:0; height:9pt;
+                     border-right:1.4pt solid #A67C2E"></td>
+          <td style="padding:0; height:9pt"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  {# numerals #}
+  <tr>
+    {% for tick in m.ticks %}
+      {% if not loop.last %}
+        <td style="padding:0; font-size:5.5pt; color:#6E7378;
+                   font-family:"MetroScan Mono", Courier, monospace">{{ tick.label or "" }}</td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+</table>
+
+<table style="width:100%; padding-top:2pt">
+  <tr>
+    <td style="width:50%; font-size:7.5pt">
+      <span style="color:#6E7378">measured</span>
+      {% if m.measured_mm is none %}
+        <span style="color:#A67C2E; font-weight:bold"> not measurable</span>
+      {% else %}
+        <span class="mono"
+              style="color:{{ '#2C6A5D' if m.compliant else '#A93B28' }}; font-weight:bold">
+          {{ "%.2f"|format(m.measured_mm) }} mm</span>
+        {% if m.shortfall_mm %}
+          <span style="color:#A93B28"> — short by {{ "%.2f"|format(m.shortfall_mm) }} mm</span>
+        {% endif %}
+      {% endif %}
+    </td>
+    <td style="width:50%; text-align:right; font-size:7.5pt">
+      <span style="color:#6E7378">required</span>
+      <span class="mono" style="color:#A67C2E; font-weight:bold">
+        {{ "%.1f"|format(m.required_mm) }} mm</span>
+      {% if m.citation %}<span style="color:#6E7378"> · {{ m.citation }}</span>{% endif %}
+      {% if m.pdp_area_cm2 %}
+        <span style="color:#6E7378"> · panel {{ "%.0f"|format(m.pdp_area_cm2) }} cm²</span>
+      {% endif %}
+    </td>
+  </tr>
+</table>
+{% endmacro %}
+
+
+{#
+  The compliance score as a calibrated scale reading — linear, graduated, with a limit
+  line at the pass threshold. Deliberately not a donut or a gauge: those break the
+  instrument metaphor and cannot show a threshold.
+#}
+{% macro score_scale(value, threshold) %}
+<table style="width:100%; border-collapse:collapse">
+  <tr>
+    {% for step in range(11) %}
+      {% if step < 10 %}
+        <td style="padding:0; height:{{ 6 if step % 5 == 0 else 3 }}pt;
+                   border-left:0.5pt solid {{ '#16191C' if step % 5 == 0 else '#9AA0A6' }};
+                   vertical-align:bottom"></td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+  <tr><td colspan="10" style="border-top:0.8pt solid #16191C; height:0; padding:0"></td></tr>
+  <tr>
+    <td colspan="10" style="padding:0">
+      <table style="width:100%; border-collapse:collapse">
+        <tr>
+          <td style="width:{{ value }}%; height:7pt; padding:0;
+                     background:{{ '#2C6A5D' if value >= threshold else '#A93B28' }}"></td>
+          <td style="padding:0; height:7pt"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="10" style="padding:0">
+      <table style="width:100%; border-collapse:collapse">
+        <tr>
+          <td style="width:{{ threshold }}%; height:9pt; padding:0;
+                     border-right:1.4pt solid #A67C2E"></td>
+          <td style="padding:0; height:9pt; font-size:5.5pt; color:#A67C2E;
+                     font-family:"MetroScan Mono", Courier, monospace">&nbsp;{{ threshold|int }} pass</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+{% endmacro %}

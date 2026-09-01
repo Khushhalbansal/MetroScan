@@ -1,0 +1,153 @@
+/* The camera control, in the instrument vocabulary: a sighting frame with graduated
+   corner marks, flat surfaces, no rounded "take a selfie" affordances. */
+
+.capture__open {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  border: 1px solid var(--ink-300);
+  border-left: 3px solid var(--seal);
+  border-radius: var(--radius);
+  background: transparent;
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--tick),
+    background var(--tick);
+}
+
+.capture__open:hover {
+  background: var(--seal-tint);
+  border-color: var(--seal);
+  border-left-color: var(--seal);
+}
+
+.capture__open-main {
+  font-weight: 500;
+  color: var(--seal);
+}
+
+.capture__open-hint {
+  font-size: var(--step--2);
+  color: var(--ink-500);
+}
+
+.capture {
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius);
+  background: var(--ink-050);
+  padding: 0.75rem;
+}
+
+.capture__frame {
+  position: relative;
+  background: var(--chassis);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  /* Capped, or a 4:3 sight at full content width stands about 1150px tall and pushes
+     the Capture control below the fold — the officer can see the pack and cannot take
+     the photograph. */
+  max-height: min(56vh, 460px);
+  display: grid;
+  place-items: center;
+}
+
+.capture__video,
+.capture__still {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.capture__waiting {
+  color: var(--ink-400);
+}
+
+/* Corner marks, not a full rectangle: the frame should read as a sight, and a closed
+   box would imply a crop that is not actually applied. */
+.capture__reticle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.capture__reticle path {
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A graduated edge along the bottom of the sight — the same tick as the rail and the
+   Rule 8 rule, at the scale of a viewfinder. */
+.capture__graduations {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 5%;
+  height: 8px;
+  pointer-events: none;
+  border-top: 1px solid rgb(244 245 242 / 0.5);
+  background-image: repeating-linear-gradient(
+      to right,
+      rgb(244 245 242 / 0.75) 0 1px,
+      transparent 1px 32px
+    ),
+    repeating-linear-gradient(to right, rgb(244 245 242 / 0.4) 0 1px, transparent 1px 8px);
+  background-size:
+    100% 8px,
+    100% 4px;
+  background-repeat: no-repeat;
+}
+
+.capture__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.capture__note {
+  margin: 0.5rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-500);
+}
+
+.capture__unavailable {
+  border-left: 3px solid var(--brass);
+  background: var(--brass-tint);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.capture__unavailable-text {
+  margin: 0;
+  flex: 1 1 100%;
+  font-size: var(--step--1);
+}
+
+.capture__dismiss {
+  background: none;
+  border: none;
+  color: var(--ink-500);
+  font-size: var(--step--1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 0.45rem 0.2rem;
+}
+
+.capture__dismiss:hover {
+  color: var(--chassis);
+}

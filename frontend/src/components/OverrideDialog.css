@@ -1,0 +1,145 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(22 25 28 / 0.55);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.dialog {
+  background: var(--bone);
+  border-radius: var(--radius);
+  border-top: 3px solid var(--brass);
+  padding: 1.25rem 1.35rem 1.35rem;
+  width: min(34rem, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialog__title {
+  font-size: var(--step-1);
+  margin: 0.2rem 0 0.15rem;
+}
+
+.dialog__rule {
+  margin: 0;
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+/* Block, not flex. As a flex container this turned the status mark into a flex item,
+   which pushed the rest of the sentence onto its own line and left the full stop
+   stranded there: "The software recorded  NEEDS REVIEW" / ". That stays on the
+   record." Inline-flex with a baseline nudge keeps the mark inside the sentence. */
+.dialog__machine {
+  margin: 0.9rem 0 0;
+  padding: 0.55rem 0.7rem;
+  background: var(--ink-050);
+  font-size: var(--step--1);
+}
+
+.dialog__machine .status {
+  vertical-align: baseline;
+  position: relative;
+  top: 2px;
+}
+
+.dialog__choices {
+  border: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.dialog__choices legend {
+  margin-bottom: 0.4rem;
+}
+
+.dialog__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius);
+  background: transparent;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  transition:
+    border-color var(--tick),
+    background var(--tick);
+}
+
+.dialog__choice:hover:not(:disabled) {
+  border-color: var(--ink-400);
+}
+
+.dialog__choice.is-chosen {
+  border-color: var(--seal);
+  background: var(--seal-tint);
+  box-shadow: inset 0 0 0 1px var(--seal);
+}
+
+.dialog__choice:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.dialog__already {
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+.dialog__label {
+  display: block;
+  margin: 1.1rem 0 0.35rem;
+}
+
+.dialog__help {
+  display: block;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+  margin-top: 0.15rem;
+}
+
+.dialog__reason {
+  width: 100%;
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.6rem;
+  font-size: var(--step--1);
+  background: #fff;
+  resize: vertical;
+}
+
+.dialog__reason:focus-visible {
+  border-color: var(--seal);
+}
+
+.dialog__count {
+  margin: 0.25rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+.dialog__count.is-short {
+  color: var(--brass);
+}
+
+.dialog__error {
+  margin: 0.7rem 0 0;
+  padding: 0.5rem 0.7rem;
+  background: var(--oxide-tint);
+  border-left: 2.5px solid var(--oxide);
+  font-size: var(--step--1);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}

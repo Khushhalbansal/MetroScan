@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" role="img"
+     aria-label="The panel carrying the mandatory declarations faces the camera and fills the frame; a pack photographed showing only its front branding is marked as wrong.">
+  <title>Photograph the panel that carries the declarations</title>
+  <rect width="420" height="260" fill="#F4F5F2"/>
+
+  <!-- correct: the declaration panel fills the frame -->
+  <g stroke="#A67C2E" stroke-width="1.5" fill="none">
+    <path d="M22 44 V28 H38 M186 28 H202 V44 M202 200 V216 H186 M38 216 H22 V200"/>
+  </g>
+  <rect x="34" y="40" width="156" height="164" fill="#FFFFFF" stroke="#16191C" stroke-width="1.3"/>
+  <g font-family="IBM Plex Sans, sans-serif" fill="#33383D">
+    <text x="44" y="60" font-size="8">Manufactured by: Sunrise Foods Pvt Ltd</text>
+    <text x="44" y="74" font-size="8">Plot 14, MIDC Ambad, Nashik 422010</text>
+    <text x="44" y="96" font-size="12" font-weight="600">Net Qty: 200 g</text>
+    <text x="44" y="118" font-size="12" font-weight="600">MRP Rs. 45.00</text>
+    <text x="44" y="132" font-size="8">(inclusive of all taxes)</text>
+    <text x="44" y="150" font-size="8">Rs. 0.23 per g</text>
+    <text x="44" y="164" font-size="8">Mfd. 03/2026</text>
+    <text x="44" y="178" font-size="8">care@sunrisefoods.in</text>
+    <text x="44" y="192" font-size="8">Toll free 1800 200 1234</text>
+  </g>
+  <text x="112" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#2C6A5D">DECLARATIONS IN FULL VIEW</text>
+
+  <g stroke="#C9CCC8" stroke-width="1"><path d="M210 40 V216"/></g>
+
+  <!-- wrong: only the brand face is shown -->
+  <g stroke="#A67C2E" stroke-width="1.5" fill="none" opacity="0.45">
+    <path d="M238 44 V28 H254 M386 28 H398 V44 M398 200 V216 H386 M254 216 H238 V200"/>
+  </g>
+  <rect x="250" y="40" width="140" height="164" fill="#FFFFFF" stroke="#16191C" stroke-width="1.3"/>
+  <g font-family="IBM Plex Sans, sans-serif" fill="#33383D">
+    <text x="320" y="112" text-anchor="middle" font-size="19" font-weight="700">Sunrise</text>
+    <text x="320" y="136" text-anchor="middle" font-size="13">Chana Masala</text>
+  </g>
+  <g stroke="#A93B28" stroke-width="2.2" fill="none">
+    <path d="M356 52 L376 72 M376 52 L356 72"/>
+  </g>
+  <text x="320" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+        font-size="11" fill="#A93B28">BRAND FACE ONLY</text>
+</svg>

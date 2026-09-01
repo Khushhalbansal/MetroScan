@@ -1,0 +1,211 @@
+.repo__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.repo__title {
+  font-size: var(--step-3);
+  margin-top: 0.15rem;
+}
+
+.repo__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0 0.75rem;
+}
+
+.repo__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.repo__chip {
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius);
+  background: transparent;
+  padding: 0.32rem 0.7rem;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+  cursor: pointer;
+  transition:
+    color var(--tick),
+    border-color var(--tick),
+    background var(--tick);
+}
+
+.repo__chip:hover {
+  color: var(--chassis);
+  border-color: var(--ink-400);
+}
+
+.repo__chip.is-on {
+  background: var(--chassis);
+  border-color: var(--chassis);
+  color: var(--bone);
+}
+
+.repo__rule-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.repo__input {
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  padding: 0.32rem 0.5rem;
+  font-size: var(--step--1);
+  background: #fff;
+  width: 15rem;
+  max-width: 100%;
+}
+
+.repo__total {
+  color: var(--ink-400);
+  margin: 0 0 0.25rem;
+}
+
+.repo__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.repo__row {
+  border-top: 1px solid var(--ink-200);
+  position: relative;
+}
+
+.repo__row:last-child {
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.repo__row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  bottom: 0;
+  width: 3px;
+}
+
+.repo__row--NON_COMPLIANT::before {
+  background: var(--oxide);
+}
+.repo__row--INCONCLUSIVE::before {
+  background: var(--brass);
+}
+.repo__row--COMPLIANT::before {
+  background: var(--patina);
+}
+
+.repo__link {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) auto minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 0.75rem 0.8rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--tick);
+}
+
+.repo__link:hover {
+  background: var(--ink-050);
+}
+
+.repo__product {
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.repo__numbers {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.repo__score {
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+.repo__unscored {
+  font-size: var(--step--1);
+  color: var(--brass);
+}
+
+.repo__coverage {
+  font-size: var(--step--2);
+  color: var(--ink-400);
+}
+
+.repo__tallies {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: var(--step--2);
+}
+
+.repo__tally--fail {
+  color: var(--oxide);
+}
+.repo__tally--review {
+  color: var(--brass);
+}
+
+.repo__date {
+  font-size: var(--step--2);
+  color: var(--ink-400);
+  white-space: nowrap;
+}
+
+.repo__empty {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--ink-050);
+  border-left: 2.5px solid var(--seal);
+  font-size: var(--step-0);
+  max-width: 48ch;
+}
+
+@container bench (max-width: 54rem) {
+  .repo__link {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "product verdict"
+      "numbers tallies"
+      "date    date";
+    gap: 0.4rem 1rem;
+  }
+  .repo__product {
+    grid-area: product;
+    white-space: normal;
+  }
+  .repo__numbers {
+    grid-area: numbers;
+  }
+  .repo__tallies {
+    grid-area: tallies;
+    align-items: flex-end;
+  }
+  .repo__date {
+    grid-area: date;
+  }
+}
+
+.repo__tally--retain {
+  color: var(--brass);
+  border-color: var(--brass);
+}

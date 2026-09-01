@@ -1,0 +1,186 @@
+.gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.gate__thesis {
+  background: var(--chassis);
+  color: var(--bone);
+  padding: clamp(2rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* graduation texture down the seam, the same instrument as everywhere else */
+  border-right: 1px solid #000;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.055) 0 1px,
+    transparent 1px 16px
+  );
+  background-size: 6px 100%;
+  background-repeat: no-repeat;
+  background-position: top right;
+}
+
+.gate__eyebrow {
+  color: var(--ink-400);
+}
+
+.gate__headline {
+  font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+  font-variation-settings: "wdth" 112;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  max-width: 22ch;
+  margin: 0.75rem 0 0;
+  /* Without this the first sentence drops "right." onto a line of its own and the
+     second strands "are." — two orphans in the one piece of type on the page that
+     has to look deliberate. */
+  text-wrap: balance;
+}
+
+.gate__headline-em {
+  color: var(--brass);
+  display: block;
+}
+
+/* The working Measure that opens the page: brass limit line, oxide shortfall.
+   Recoloured for the dark chassis, same instrument. */
+.gate__demo {
+  margin: clamp(1.75rem, 4vw, 2.75rem) 0;
+  max-width: 30rem;
+}
+
+.gate__demo-label {
+  color: var(--ink-400);
+  margin: 0 0 0.35rem;
+}
+
+.gate__demo .measure__tick {
+  stroke: #4a5057;
+}
+.gate__demo .measure__tick--major {
+  stroke: var(--ink-300);
+}
+.gate__demo .measure__baseline {
+  stroke: var(--ink-200);
+}
+.gate__demo .measure__numeral {
+  color: var(--ink-500);
+}
+.gate__demo .measure__caption {
+  color: var(--ink-400);
+}
+.gate__demo .eyebrow {
+  color: var(--ink-500);
+}
+
+.gate__body {
+  max-width: 46ch;
+  color: var(--ink-300);
+  font-size: var(--step-0);
+  margin: 0;
+}
+
+/*
+  Three anchors down the column — the mark, the form, the standing note — rather than
+  one block floating in the middle of a tall field of bone. The first version centred
+  the form alone and read as unfinished rather than restrained.
+*/
+.gate__form-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 4vw, 3rem);
+}
+
+.gate__mark {
+  display: flex;
+  flex-direction: column;
+}
+
+.gate__wordmark {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 122;
+  font-weight: 700;
+  font-size: var(--step-1);
+  letter-spacing: 0.02em;
+}
+
+.gate__mark-sub {
+  color: var(--ink-400);
+  letter-spacing: 0.18em;
+}
+
+.gate__form {
+  width: min(22rem, 100%);
+  margin: 0 auto;
+}
+
+.gate__foot {
+  max-width: 30rem;
+}
+
+.gate__foot-note {
+  margin: 0.6rem 0 0;
+  font-size: var(--step--2);
+  color: var(--ink-500);
+}
+
+.gate__form-title {
+  font-size: var(--step-2);
+  margin-bottom: 1.25rem;
+}
+
+.gate__label {
+  display: block;
+  font-size: var(--step--1);
+  font-weight: 500;
+  margin: 0.9rem 0 0.25rem;
+}
+
+.gate__input {
+  width: 100%;
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+}
+
+.gate__input:focus-visible {
+  border-color: var(--seal);
+}
+
+.gate__submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 1.3rem;
+  padding: 0.6rem;
+}
+
+.gate__error {
+  margin: 1rem 0 0;
+  padding: 0.55rem 0.7rem;
+  background: var(--oxide-tint);
+  border-left: 2.5px solid var(--oxide);
+  font-size: var(--step--1);
+}
+
+.gate__aside {
+  margin-top: 1.25rem;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+}
+
+@media (max-width: 900px) {
+  .gate {
+    grid-template-columns: 1fr;
+  }
+  .gate__thesis {
+    border-right: none;
+    border-bottom: 1px solid #000;
+  }
+}

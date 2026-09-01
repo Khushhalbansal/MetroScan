@@ -1,0 +1,71 @@
+/*
+  Shared interactive controls.
+
+  `.button` was defined in routes/Examination.css but used across the app; it lives
+  here now so there is one definition. Page-specific variants (the examination
+  delete affordance) stay with their page.
+
+  Touch ergonomics: on a coarse pointer every control is at least 44px on its
+  shorter axis, because most officers use this at a shelf with a thumb. Desktop
+  keeps the compact size.
+*/
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--seal);
+  padding: 0.45rem 0.85rem;
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--tick),
+    border-color var(--tick),
+    color var(--tick);
+}
+
+.button:hover {
+  border-color: var(--seal);
+  background: var(--seal-tint);
+}
+
+.button--primary {
+  background: var(--seal);
+  border-color: var(--seal);
+  color: var(--bone);
+}
+
+.button--primary:hover {
+  background: var(--seal-pressed);
+  border-color: var(--seal-pressed);
+  color: var(--bone);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (pointer: coarse) {
+  .button {
+    min-block-size: 2.75rem;
+    padding-inline: 1rem;
+  }
+
+  /* The smaller bespoke affordances that don't use `.button`: the image-strip
+     row actions, the "add photograph" tile, the ledger's inline override button,
+     and the override dialog's status choices. 44px on the short axis. */
+  .strip__action,
+  .strip__add,
+  .ledger__overrule,
+  .dialog__choice {
+    min-block-size: 2.75rem;
+  }
+}

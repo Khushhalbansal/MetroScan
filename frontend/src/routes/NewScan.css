@@ -1,0 +1,185 @@
+.check {
+  max-width: 46rem;
+}
+
+.check__title {
+  font-size: var(--step-3);
+  margin: 0.15rem 0 1rem;
+}
+
+/* The scale note carries the same weight as the file picker, because it is the
+   difference between a measurement and a guess. */
+.check__scale-note {
+  margin: 1.25rem 0 1.75rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--brass-tint);
+  border-left: 3px solid var(--brass);
+}
+
+.check__scale-head {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-weight: 650;
+  font-size: var(--step-0);
+}
+
+.check__scale-body {
+  margin: 0.35rem 0 0;
+  font-size: var(--step--1);
+  max-width: 60ch;
+}
+
+.check__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.check__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.check__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.check__label {
+  font-size: var(--step--1);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.check__optional {
+  color: var(--ink-400);
+  font-weight: 400;
+}
+
+.check__input {
+  border: 1px solid var(--ink-300);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+}
+
+.check__input:focus-visible {
+  border-color: var(--seal);
+}
+
+.check__help {
+  display: block;
+  font-size: var(--step--2);
+  color: var(--ink-500);
+  margin-top: 0.2rem;
+}
+
+.check__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: var(--step--1);
+}
+
+.check__toggle input {
+  margin-top: 0.25rem;
+  accent-color: var(--seal);
+}
+
+.check__drop {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  border: 1px dashed var(--ink-300);
+  border-radius: var(--radius);
+  background: transparent;
+  padding: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--tick),
+    background var(--tick);
+}
+
+.check__drop:hover {
+  border-color: var(--seal);
+  background: var(--seal-tint);
+}
+
+.check__drop-main {
+  font-weight: 500;
+  color: var(--seal);
+}
+
+.check__files {
+  font-size: var(--step--2);
+  color: var(--ink-500);
+  word-break: break-all;
+}
+
+/* The staged set: a manifest of what is about to be judged, not a gallery. Names and
+   sizes in mono so they column-align the way the rest of the bench's data does. */
+.staged {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--ink-200);
+}
+
+.staged__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.1rem;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.staged__name {
+  font-size: var(--step--2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staged__size {
+  font-size: var(--step--2);
+  color: var(--ink-400);
+  white-space: nowrap;
+}
+
+.staged__remove {
+  background: none;
+  border: none;
+  color: var(--seal);
+  font-size: var(--step--2);
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.staged__remove:hover {
+  color: var(--oxide);
+}
+
+.check__submit {
+  align-self: flex-start;
+  padding: 0.6rem 1.1rem;
+}
+
+.check__waiting {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-500);
+}
+
+@media (max-width: 620px) {
+  .check__pair {
+    grid-template-columns: 1fr;
+  }
+}

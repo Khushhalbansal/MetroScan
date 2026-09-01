@@ -1,0 +1,59 @@
+/* The frame-check readout: a flat plate clipped to the side of the sight, in the
+   same vocabulary as the rail and the Rule 8 rule. Attention is brass (a reading out
+   of tolerance, not a compliance failure); the settled, in-shot state is patina. */
+
+.readout {
+  margin-top: 0.6rem;
+  border: 1px solid var(--ink-200);
+  border-left: 3px solid var(--brass);
+  border-radius: var(--radius);
+  background: var(--bone);
+  padding: 0.55rem 0.7rem;
+}
+
+.readout--clear {
+  border-left-color: var(--patina);
+}
+
+.readout__eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--ink-500);
+}
+
+.readout__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.readout__line {
+  display: grid;
+  grid-template-columns: 0.9rem 1fr;
+  gap: 0.4rem;
+  font-size: var(--step--1);
+  line-height: 1.35;
+}
+
+.readout__mark {
+  font-size: var(--step--2);
+  line-height: 1.6;
+}
+
+.readout__line--fault {
+  color: var(--ink-700);
+}
+
+.readout__line--fault .readout__mark {
+  color: var(--brass);
+}
+
+.readout__line--ok {
+  color: var(--ink-500);
+}
+
+.readout__line--ok .readout__mark {
+  color: var(--patina);
+}

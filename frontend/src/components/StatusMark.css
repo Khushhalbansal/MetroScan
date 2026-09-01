@@ -1,0 +1,56 @@
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-weight: 650;
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status--small {
+  font-size: var(--step--2);
+}
+
+.status--PASS {
+  color: var(--patina);
+}
+.status--FAIL {
+  color: var(--oxide);
+}
+.status--NEEDS_REVIEW {
+  color: var(--brass);
+}
+.status--NA {
+  color: var(--ink-400);
+}
+
+/* The verdict is the primary reading on any screen it appears on, so it is a block
+   of ink rather than a line of text — but it is still colour + glyph + word. */
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius);
+  color: var(--bone);
+  font-family: var(--display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-weight: 700;
+  font-size: var(--step-0);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.verdict--COMPLIANT {
+  background: var(--patina);
+}
+.verdict--NON_COMPLIANT {
+  background: var(--oxide);
+}
+.verdict--INCONCLUSIVE {
+  background: var(--brass);
+}

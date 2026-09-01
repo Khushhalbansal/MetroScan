@@ -1,6 +1,17 @@
 .measure {
   margin: 0.75rem 0 0;
   padding: 0;
+  /* Pointer-follow tilt of the whole plane. The hook (useTilt) writes the angles;
+     --tilt-settle is 0ms while pointing (direct follow) and 260ms on leave (the
+     spring back). Reduced motion and touch never set the angles, and the global
+     reduced-motion rule collapses the transition regardless. */
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-settle: 0ms;
+  transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform var(--tilt-settle) var(--ease-settle);
+  transform-origin: center 60%;
+  will-change: transform;
 }
 
 .measure__rule {
@@ -26,7 +37,9 @@
 
 .measure__bar {
   fill: var(--oxide);
-  transition: width 620ms cubic-bezier(0.16, 0.84, 0.28, 1);
+  /* The index settles with one small overshoot — a needle coming to rest, not a
+     bar that slides and stops dead. */
+  transition: width 620ms cubic-bezier(0.34, 1.28, 0.64, 1);
 }
 
 .measure__bar--met {
@@ -34,10 +47,12 @@
 }
 
 /* The brass limit line — the legally required height, and the one thing on the
-   rule that is not a measurement but a rule. */
+   rule that is not a measurement but a rule. The 1px bone sheen on its trailing
+   edge reads as the catch of light on a milled metal edge. */
 .measure__limit {
   stroke: var(--brass);
   stroke-width: 2.5;
+  filter: drop-shadow(0.5px 0 0 rgb(244 245 242 / 0.55));
 }
 
 .measure__numerals {

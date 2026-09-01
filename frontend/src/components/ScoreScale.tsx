@@ -80,6 +80,12 @@ export function ScoreScale({
             style={{ left: `${threshold}%` }}
             aria-hidden="true"
           />
+          {/* the index — a needle that sweeps once to the reading and settles */}
+          <span
+            className="score__index"
+            style={{ left: swept ? `${score}%` : "0%" }}
+            aria-hidden="true"
+          />
         </div>
         <span className="score__limit-label eyebrow" style={{ left: `${threshold}%` }}>
           {threshold} pass

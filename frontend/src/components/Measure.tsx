@@ -16,6 +16,8 @@
 */
 
 import { useEffect, useRef, useState } from "react";
+
+import { useTilt } from "../lib/motion";
 import "./Measure.css";
 
 export interface MeasureProps {
@@ -83,8 +85,12 @@ export function Measure({
   const reading =
     measuredMm === null ? "not measurable" : `${measuredMm.toFixed(2)} mm`;
 
+  // A ≤6° pointer-follow tilt on the plane the rule sits on (design-direction.md
+  // v2). The graduations, limit line and numerals ride the plane without skewing.
+  const tilt = useTilt<HTMLElement>(6);
+
   return (
-    <figure className="measure">
+    <figure className="measure" ref={tilt}>
       <svg
         className="measure__rule"
         viewBox={`0 0 ${W} ${H}`}

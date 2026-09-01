@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
 import type { FindingStatus, ScanImage } from "../api/types";
+import { useParallax } from "../lib/motion";
 import "./EvidencePlate.css";
 
 export interface Box {
@@ -67,9 +68,13 @@ export function EvidencePlate({ scanId, images, boxes, active, onHover, onSelect
 
   const shown = boxes.filter((b) => b.imageId === image.image_id);
 
+  // Three planes on pointer parallax (design-direction.md v2): the photo drifts
+  // one way, the annotation overlay the other, ≤12px. Pointer-fine only.
+  const parallax = useParallax<HTMLDivElement>(12);
+
   return (
     <figure className="plate">
-      <div className="plate__frame">
+      <div className="plate__frame" ref={parallax}>
         {failed ? (
           <p className="plate__none">
             The evidence image could not be loaded. The finding still stands on the

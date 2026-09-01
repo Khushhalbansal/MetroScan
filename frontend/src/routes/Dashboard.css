@@ -296,6 +296,28 @@
   color: var(--brass);
 }
 
+/* --- draw-on-enter (design-direction.md v2: "Data draws itself once") --------
+   The bars and the day chart start collapsed and grow to their data-driven size
+   when .dash first comes into view. Scale only — the inline width/height that
+   carries the data is never touched. Reduced motion: useInView reports in-view
+   immediately and the global rule zeroes the transition, so they are just there. */
+.bar__part,
+.violations__fill,
+.trend__stack {
+  transition: transform var(--sweep);
+}
+
+.dash:not(.is-drawn) .bar__part,
+.dash:not(.is-drawn) .violations__fill {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.dash:not(.is-drawn) .trend__stack {
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
 /* --- trend ------------------------------------------------------------------- */
 
 .trend {

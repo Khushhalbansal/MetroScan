@@ -34,7 +34,19 @@
 
 .score__bar {
   height: 100%;
-  transition: width 720ms cubic-bezier(0.16, 0.84, 0.28, 1);
+  transition: width 760ms cubic-bezier(0.34, 1.22, 0.64, 1);
+}
+
+/* The needle: a thin chassis-dark rule that sweeps to the reading with the bar and
+   comes to rest with one small overshoot. */
+.score__index {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--chassis);
+  transition: left 760ms cubic-bezier(0.34, 1.22, 0.64, 1);
 }
 
 .score__bar--met {
@@ -50,6 +62,17 @@
   bottom: -6px;
   width: 2.5px;
   background: var(--brass);
+}
+
+/* a small flag at the head of the limit line — a set-point marker on a dial */
+.score__limit::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 2.5px;
+  border: 3px solid transparent;
+  border-top-color: var(--brass);
+  border-left-color: var(--brass);
 }
 
 .score__limit-label {

@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 
 import { ApiError, api } from "../api/client";
 import type { Dashboard as DashboardData } from "../api/types";
+import { useInView } from "../lib/motion";
 import "./Dashboard.css";
 
 const WINDOWS = [
@@ -83,6 +84,9 @@ export function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [days, setDays] = useState(90);
   const [error, setError] = useState<string | null>(null);
+  // The graduated bars and the day chart draw themselves from empty on first view
+  // (design-direction.md v2: "Data draws itself once"). Reduced motion → present.
+  const [drawRef, drawn] = useInView<HTMLDivElement>();
 
   useEffect(() => {
     let live = true;
@@ -106,7 +110,7 @@ export function Dashboard() {
   const maxDay = Math.max(1, ...data.daily.map((d) => d.scans));
 
   return (
-    <div className="dash">
+    <div className={`dash ${drawn ? "is-drawn" : ""}`} ref={drawRef}>
       <header className="dash__head">
         <div>
           <p className="eyebrow">Enforcement</p>

@@ -259,7 +259,9 @@ export function Examination() {
                   className={`ledger__row ledger__row--${finding.status} ${
                     isActive ? "is-active" : ""
                   }`}
-                  style={{ animationDelay: `${Math.min(index, 12) * 28}ms` }}
+                  /* A beat behind the annotation boxes (which start at 0 and run
+                     ~55ms apart), so the eye is walked image → ledger. */
+                  style={{ animationDelay: `${150 + Math.min(index, 12) * 28}ms` }}
                   onMouseEnter={() => setActive(finding.rule_id)}
                   onMouseLeave={() => setActive(null)}
                   onFocus={() => setActive(finding.rule_id)}

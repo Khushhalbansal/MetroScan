@@ -94,3 +94,95 @@ export function useInView<T extends Element = HTMLDivElement>(
 export function stagger(index: number, step = 32, cap = 240): number {
   return Math.min(index * step, cap);
 }
+
+/**
+ * Pointer-follow tilt for a physical-object component (v2: "The Measure may tilt",
+ * ≤ 6° with a spring back). Sets `--tilt-x` / `--tilt-y` / `--tilt-settle` on the
+ * element; the element's CSS turns those into a `perspective()` transform. The tilt
+ * carries no information — it is the feel of a rule under a desk lamp.
+ *
+ * No-ops on touch, on coarse pointers, and under reduced motion.
+ */
+export function useTilt<T extends HTMLElement = HTMLElement>(
+  maxDeg = 6,
+): React.RefObject<T | null> {
+  const ref = useRef<T>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+    if (!window.matchMedia?.("(hover: hover) and (pointer: fine)").matches) return;
+
+    const settle = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const px = (e.clientX - r.left) / r.width - 0.5; // -0.5 … 0.5
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty("--tilt-y", `${(px * 2 * maxDeg).toFixed(2)}deg`);
+      el.style.setProperty("--tilt-x", `${(-py * 2 * maxDeg * 0.6).toFixed(2)}deg`);
+      el.style.setProperty("--tilt-settle", "0ms"); // follow directly while pointing
+    };
+    const rest = () => {
+      el.style.setProperty("--tilt-x", "0deg");
+      el.style.setProperty("--tilt-y", "0deg");
+      el.style.setProperty("--tilt-settle", "260ms"); // spring back on leave
+    };
+
+    el.addEventListener("pointermove", settle);
+    el.addEventListener("pointerleave", rest);
+    el.addEventListener("pointercancel", rest);
+    return () => {
+      el.removeEventListener("pointermove", settle);
+      el.removeEventListener("pointerleave", rest);
+      el.removeEventListener("pointercancel", rest);
+    };
+  }, [maxDeg, reduced]);
+
+  return ref;
+}
+
+/**
+ * Pointer parallax for a layered panel (v2: "the bench has up to three planes",
+ * translation capped at 12px). Sets `--par-x` / `--par-y` on the element in the
+ * range ±`maxPx`; children multiply those by their own depth factor and sign so
+ * the planes slide against each other. No-ops on touch / coarse / reduced motion.
+ */
+export function useParallax<T extends HTMLElement = HTMLElement>(
+  maxPx = 12,
+): React.RefObject<T | null> {
+  const ref = useRef<T>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+    if (!window.matchMedia?.("(hover: hover) and (pointer: fine)").matches) return;
+
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const px = ((e.clientX - r.left) / r.width - 0.5) * 2; // -1 … 1
+      const py = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      el.style.setProperty("--par-x", `${(px * maxPx).toFixed(1)}px`);
+      el.style.setProperty("--par-y", `${(py * maxPx).toFixed(1)}px`);
+      el.style.setProperty("--par-settle", "0ms");
+    };
+    const rest = () => {
+      el.style.setProperty("--par-x", "0px");
+      el.style.setProperty("--par-y", "0px");
+      el.style.setProperty("--par-settle", "300ms");
+    };
+
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerleave", rest);
+    el.addEventListener("pointercancel", rest);
+    return () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerleave", rest);
+      el.removeEventListener("pointercancel", rest);
+    };
+  }, [maxPx, reduced]);
+
+  return ref;
+}

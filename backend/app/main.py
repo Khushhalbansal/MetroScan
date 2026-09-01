@@ -41,14 +41,12 @@ def create_app() -> FastAPI:
         openapi_url=f"{settings.api_prefix}/openapi.json",
     )
 
-    # The web client is served from a different origin in development. Locked to the
-    # dev hosts rather than "*", so this does not quietly ship as an open API.
+    # The web client is served from a different origin. Locked to a named list
+    # (settings.cors_origins) rather than "*", so this does not quietly ship as an
+    # open API — the deployed frontend URL has to be added explicitly.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-        ],
+        allow_origins=settings.cors_origin_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

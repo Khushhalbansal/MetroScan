@@ -17,6 +17,15 @@ class Settings(BaseSettings):
     environment: str = "development"
     api_prefix: str = "/api/v1"
 
+    # Origins the browser client is served from. The dev hosts by default; in a split
+    # deployment (frontend on Vercel, this API on its own host) set CORS_ORIGINS to a
+    # comma-separated list including the deployed frontend URL.
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
     # SQLite by default so a clean checkout runs with no services; point at
     # postgresql+psycopg://... in infra/docker-compose.yml for the real deployment.
     database_url: str = f"sqlite:///{REPO_ROOT / 'data' / 'bench.db'}"

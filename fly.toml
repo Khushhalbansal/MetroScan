@@ -1,0 +1,43 @@
+# Fly.io config for the MetroScan API. Change `app` to your own name, then:
+#   fly launch --no-deploy       (or `fly apps create <name>` if this file exists)
+#   fly volumes create metroscan_data --region bom --size 1
+#   fly secrets set DATABASE_URL='postgresql+psycopg://...supabase...' JWT_SECRET='<48+ random chars>' CORS_ORIGINS='https://<your-app>.vercel.app'
+#   fly deploy
+# Full runbook: docs/deploy.md
+
+app = "metroscan-api"
+primary_region = "bom"   # Mumbai
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  ENVIRONMENT = "production"
+  RULES_DIR = "/app/rules"
+  STORAGE_DIR = "/data/storage"
+  RETENTION_SWEEP_ENABLED = "true"
+
+# Evidence images and generated PDFs. The database is on Supabase, so this volume
+# only holds files. Single machine — see docs/deploy.md if you scale past one.
+[[mounts]]
+  source = "metroscan_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1     # keep one up so Feature 6's retention sweep runs
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "25s"
+    method = "GET"
+    path = "/api/v1/health"
+
+[[vm]]
+  memory = "1gb"     # onnxruntime + the OCR models need headroom; 512mb OOMs
+  cpu_kind = "shared"
+  cpus = 1

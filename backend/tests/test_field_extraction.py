@@ -221,6 +221,82 @@ def test_manufacture_date_forms(line, month, year):
     assert (parsed.month, parsed.year) == (month, year)
 
 
+@pytest.mark.parametrize(
+    ("text", "month", "year"),
+    [
+        ("30/10/25", 10, 2025),
+        ("30-10-2025", 10, 2025),
+        ("0TA301025007:38", 10, 2025),  # DDMMYY with a garbled prefix and a time stuck on
+        ("MFG 150127", 1, 2027),
+    ],
+)
+def test_loose_dmy_reads_a_stamped_ddmmyy(text, month, year):
+    from app.pipeline.fields import _loose_dmy
+
+    d = _loose_dmy(text)
+    assert (d.month, d.year) == (month, year)
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["2914/25", "11222999000656", "904335605720", "MRP3: 229.00 RS.0.70", "Lot RC2603A"],
+)
+def test_loose_dmy_rejects_things_that_are_not_dates(text):
+    from app.pipeline.fields import _loose_dmy
+
+    assert _loose_dmy(text).month is None
+
+
+def _block(text, x, y, h=22):
+    return OcrBlock(
+        text=text,
+        polygon=[[x, y], [x + len(text) * 9, y], [x + len(text) * 9, y + h], [x, y + h]],
+        confidence=0.9,
+        image_id="img1",
+    )
+
+
+def test_mfg_date_recovered_from_a_misaligned_value_column():
+    """A tilted printed form: the "Date of Mfg." heading and its stamped value are in
+    the same row on the pack, but the stamp column has drifted up a couple of lines so
+    the flattened reading order never puts them together. It is read by position."""
+    doc = OcrDocument.build(
+        [
+            _block("MRP (Rs) incl. of all taxes", 40, 400),
+            _block("229.00", 620, 402),
+            _block("30 10 25", 620, 470),  # the stamp, drifted up out of its row
+            _block("USP (Rs):", 40, 520),
+            _block("Date of Mfg.:", 40, 560),  # heading sits below its own value
+            _block("Use by:", 40, 610),
+        ]
+    )
+    from app.pipeline.fields import extract_mfg_date
+
+    got = extract_mfg_date(doc)
+    assert got is not None
+    assert (got.parsed.month, got.parsed.year) == (10, 2025)
+
+
+def test_a_use_by_date_in_the_wrong_row_is_not_taken_as_the_mfg_date():
+    """The value that drifted into the mfg row is the *use-by* date — DD 29 / MM 14
+    from a mangled "29/04/26". It has no valid month, so it is passed over rather than
+    misattributed."""
+    doc = OcrDocument.build(
+        [
+            _block("Date of Mfg.:", 40, 560),
+            _block("2914/26", 620, 545),  # only candidate; not a valid DD/MM
+            _block("Use by:", 40, 610),
+        ]
+    )
+    from app.pipeline.fields import extract_mfg_date
+
+    got = extract_mfg_date(doc)
+    # label present, nothing valid to the right -> the label-only stub (review), not a
+    # wrong reading.
+    assert got is not None
+    assert got.parsed.month is None
+
+
 # ------------------------------------------------------------------ consumer care
 
 

@@ -121,11 +121,15 @@ OATS_EXPECTED: dict[str, object] = {
     "MRP_CURRENCY_MARKED": FindingStatus.PASS,
     "MRP_SINGLE_VALUE": FindingStatus.PASS,
     "MRP_INCLUSIVE_OF_TAXES": FindingStatus.PASS,
-    # The manufacture date and the unit price are printed-form labels with the value
-    # ink-stamped alongside; each stamp ran over two lines and OCR merged them away.
-    # Label present, value unreadable — an officer's call, never a hard failure. PASS
-    # is allowed too, for the day OCR reads the stamp.
-    "MFG_DATE_PRESENT": {FindingStatus.NEEDS_REVIEW, FindingStatus.PASS},
+    # "Date of Mfg.:" is a printed-form label; its ink stamp ("30/10/25", OCR'd as
+    # "0TA301025007:38") sits in a value column knocked out of alignment by the tilt
+    # of the shot. It is recovered by geometry — the nearest block to the right of the
+    # heading whose digits parse as a real DD/MM/YY — so this now reads PASS, not just
+    # NEEDS_REVIEW.
+    "MFG_DATE_PRESENT": FindingStatus.PASS,
+    # The per-gram unit price on this pack is genuinely mangled by OCR ("0.70" merged
+    # into the MRP block, "/g" lost). Present label, unreadable value — an officer's
+    # call. PASS allowed for the day OCR reads the stamp.
     "UNIT_SALE_PRICE_PRESENT": {FindingStatus.NEEDS_REVIEW, FindingStatus.PASS},
     "MANUFACTURER_NAME_PRESENT": FindingStatus.PASS,
     "MANUFACTURER_ADDRESS_PRESENT": FindingStatus.PASS,

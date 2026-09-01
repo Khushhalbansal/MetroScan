@@ -425,6 +425,78 @@ _MONTHS = {m: i for i, m in enumerate(
     ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1
 )}
 
+# A manufacture stamp can only fall in a sane window. Used to reject a numeric code
+# whose first six digits happen to look like a DDMMYY.
+_PLAUSIBLE_YEARS = range(2015, 2036)
+
+
+def _loose_dmy(text: str) -> DateDeclaration:
+    """A day/month/year recovered from noisy stamp text: "30/10/25", "30-10-2025",
+    a bare "DDMMYY" run, or "DDMMYY" with a time stuck onto it ("301025 07:38").
+
+    Deliberately permissive about the surrounding characters — an ink stamp OCR's
+    with a garbled prefix and a trailing time as often as not — but strict about the
+    date itself: DD and MM must both be in range and the year plausible, which is
+    what stops a lot number or a barcode segment from being read as a date.
+    """
+    sep = re.search(r"(?<!\d)(\d{1,2})[/\-. ](\d{1,2})[/\-. ](\d{2,4})(?!\d)", text)
+    if sep:
+        parsed = _parse_month_year("/".join(sep.groups()))
+        if parsed.month:
+            return parsed
+    for run in re.finditer(r"(?<!\d)(\d{2})(\d{2})(\d{2})", text):
+        dd, mm, yy = (int(g) for g in run.groups())
+        year = yy + 2000 if yy < 100 else yy
+        if 1 <= dd <= 31 and 1 <= mm <= 12 and year in _PLAUSIBLE_YEARS:
+            return DateDeclaration(month=mm, year=year)
+    return DateDeclaration()
+
+
+def _date_in_value_column(doc: OcrDocument, label: re.Match[str]) -> Extraction | None:
+    """A stamped date whose value column drifted out of line with its heading — a
+    tilted print, an off-square photo — so the flattened reading order never put it
+    on the heading's line.
+
+    Read by geometry instead: among the blocks sitting to the right of the heading
+    and within a few line-heights of it, take the nearest one whose text yields a
+    real day *and* month. A block that gives only a year, or whose DD/MM are out of
+    range, is passed over — which is how the wrong cell (a use-by date that shifted
+    up into this row) and a lot number both get skipped.
+    """
+    label_blocks = doc.locate(label.start(), label.end()).blocks
+    if not label_blocks:
+        return None
+    anchor = label_blocks[0]
+    _, ay = anchor.centre
+    band = max(anchor.height_px, 20.0) * 4.5
+    right_of_label = anchor.bbox[0] + anchor.bbox[2] - 4.0
+
+    near = sorted(
+        (
+            b
+            for b in doc.blocks
+            if all(b is not lb for lb in label_blocks)
+            and b.centre[0] >= right_of_label
+            and abs(b.centre[1] - ay) <= band
+        ),
+        key=lambda b: abs(b.centre[1] - ay),
+    )
+    for block in near:
+        found = _loose_dmy(block.text)
+        if found.month:
+            line_start = doc.text.rfind("\n", 0, label.start()) + 1
+            span = doc.locate(line_start, label.end())
+            return Extraction(
+                key=FieldKey.MFG_DATE,
+                raw_text=f"{doc.text[line_start:label.end()].strip()}  {block.text.strip()}",
+                parsed=found,
+                # Positional, not punctuational — weaker than a one-string match, but
+                # a valid DD/MM next to the right heading is real evidence.
+                span=span,
+                confidence=_confidence(span, 0.2),
+            )
+    return None
+
 
 def _parse_month_year(text: str) -> DateDeclaration:
     """Parse a manufacture date once, here.
@@ -498,10 +570,16 @@ def extract_mfg_date(doc: OcrDocument) -> Extraction | None:
                 )
             offset += len(line) + 1
 
-    # A manufacture-date label is printed on the pack, but no date read anywhere near
-    # it — the stamped value in the next column did not survive OCR. Present but
-    # unreadable: an officer decides, the rule never fails on it.
+    # Nothing on the lines after any heading. Before giving up, try to associate a
+    # value by position rather than by reading order — the printed-form case where a
+    # tilt or an off-square photo pushed the stamp column out of line with its labels.
     if label_seen is not None:
+        by_geometry = _date_in_value_column(doc, label_seen)
+        if by_geometry is not None:
+            return by_geometry
+        # A manufacture-date label is printed on the pack, but no date read anywhere
+        # near it — the stamped value did not survive OCR. Present but unreadable: an
+        # officer decides, the rule never fails on it.
         return _label_only_stub(doc, label_seen, FieldKey.MFG_DATE, DateDeclaration())
     return None
 

@@ -16,7 +16,11 @@ import type {
   User,
 } from "./types";
 
-const BASE = "/api/v1";
+// Same-origin by default (dev proxy, or a single host in production). Set
+// VITE_API_BASE_URL at build time to point the client at a backend on another
+// origin — e.g. the frontend on Vercel and the API on a Python host.
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+const BASE = `${API_ORIGIN}/api/v1`;
 const TOKEN_KEY = "metroscan.token";
 
 export class ApiError extends Error {

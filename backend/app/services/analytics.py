@@ -213,16 +213,40 @@ def unmeasured_share(db: Session, window: Window) -> CalibrationShare:
     }
 
 
+# Above this many days in the window, the per-day trend is bucketed by ISO week so
+# the bars stay legible (a 365-day window is 52 bars, not 365 hairlines).
+DAILY_TREND_MAX_DAYS = 92
+
+
 def daily(db: Session, window: Window) -> list[dict]:
-    """Scans per day by verdict, oldest first, for a trend line."""
+    """Scans per verdict over time, oldest first, for the trend chart.
+
+    Every bucket in the window is returned, including the empty ones — a day (or
+    week) with no scans is a real reading, and a chart that omits it turns sparse
+    activity into a false run of solid bars. Buckets are days for a window up to
+    ~13 weeks, ISO weeks beyond that.
+    """
+    span_days = (window.until - window.since).days + 1
+    weekly = span_days > DAILY_TREND_MAX_DAYS
+
     statement = _in_window(
         select(Scan.scan_date, Scan.verdict, func.count()), window
     ).group_by(Scan.scan_date, Scan.verdict)
 
-    days: dict[date, dict[str, int]] = {}
+    def key_of(d: date) -> date:
+        # Monday of that ISO week, so weekly buckets are stable and label cleanly.
+        return d - timedelta(days=d.weekday()) if weekly else d
+
+    buckets: dict[date, dict[str, int]] = {}
+    step = timedelta(weeks=1) if weekly else timedelta(days=1)
+    cursor = key_of(window.since)
+    while cursor <= window.until:
+        buckets[cursor] = {"compliant": 0, "non_compliant": 0, "inconclusive": 0}
+        cursor += step
+
     for scan_date, verdict, count in db.execute(statement).all():
-        bucket = days.setdefault(
-            scan_date, {"compliant": 0, "non_compliant": 0, "inconclusive": 0}
+        bucket = buckets.setdefault(
+            key_of(scan_date), {"compliant": 0, "non_compliant": 0, "inconclusive": 0}
         )
         if verdict == Verdict.COMPLIANT:
             bucket["compliant"] += count
@@ -233,5 +257,5 @@ def daily(db: Session, window: Window) -> list[dict]:
 
     return [
         {"date": day.isoformat(), **counts, "scans": sum(counts.values())}
-        for day, counts in sorted(days.items())
+        for day, counts in sorted(buckets.items())
     ]

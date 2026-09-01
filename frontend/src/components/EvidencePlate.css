@@ -29,11 +29,8 @@
 }
 
 .plate__image {
-  transform: translate3d(calc(var(--par-x) * 1), calc(var(--par-y) * 1), 0);
-  transition: transform var(--par-settle) var(--ease-settle);
-  will-change: transform;
-  /* The photograph settles onto the bench first — a beat before the boxes draw
-     onto it. The one image "lands", it is not a slideshow. */
+  /* The photograph itself stays put — an officer is reading it. Only the boxes
+     over it drift, and only a little, for a hint of depth. */
   animation: plate-land 460ms var(--ease-settle) both;
 }
 
@@ -52,9 +49,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Opposing the photo, so the two planes visibly separate. Photo travels the full
-     ±12px (design-direction.md v2 ceiling), the boxes ~60% of it the other way. */
-  transform: translate3d(calc(var(--par-x) * -0.6), calc(var(--par-y) * -0.6), 0);
+  /* Only the boxes drift, ~3px, against a still photo — a whisper of depth, not a
+     swim. Well under the 12px v2 ceiling. */
+  transform: translate3d(calc(var(--par-x) * -0.25), calc(var(--par-y) * -0.25), 0);
   transition: transform var(--par-settle) var(--ease-settle);
 }
 

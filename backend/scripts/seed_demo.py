@@ -132,20 +132,20 @@ OFFICER_CLEARS = (
 # name, category, mode, days_ago
 #   mode: "compliant" | ("scripted", lines) | "real_compliant" | "real_undersized" | "sparse"
 PLAN = [
-    ("Sunrise Roasted Chana Masala 200 g", "FOOD", "real_compliant", 38),
-    ("Himalaya Neem & Turmeric Face Wash 150 ml", "PERSONAL CARE", "compliant", 31),
-    ("Tata Copper+ Packaged Water 1 L", "BEVERAGE", "compliant", 22),
-    ("Aashirvaad Whole Wheat Atta 1 kg", "FOOD", "compliant", 9),
-    ("Crax Corn Rings — Tomato 55 g", "SNACKS", ("scripted", without("inclusive of all taxes")), 34),
-    ("Let's Try Aloo Bhujia 400 g", "SNACKS", ("scripted", with_extra("MRP Rs. 52.00")), 27),
-    ("GlowWell Vitamin C Face Serum 30 ml", "PERSONAL CARE", ("scripted", without("care@sunrisefoods.in")), 19),
-    ("SparkClean Dishwash Gel 500 ml", "HOUSEHOLD", ("scripted", without("MRP Rs. 45.00", "inclusive of all taxes", "per g")), 14),
-    ("FreshHome Floor Cleaner — Citrus 1 L", "HOUSEHOLD", ("scripted", without("Mfd. 03/2026")), 6),
+    ("Sunrise Roasted Chana Masala 200 g", "FOOD", "real_compliant", 40),
+    ("Himalaya Neem & Turmeric Face Wash 150 ml", "PERSONAL CARE", "compliant", 40),
+    ("Tata Copper+ Packaged Water 1 L", "BEVERAGE", "compliant", 33),
+    ("Aashirvaad Whole Wheat Atta 1 kg", "FOOD", "compliant", 24),
+    ("Crax Corn Rings — Tomato 55 g", "SNACKS", ("scripted", without("inclusive of all taxes")), 24),
+    ("Let's Try Aloo Bhujia 400 g", "SNACKS", ("scripted", with_extra("MRP Rs. 52.00")), 24),
+    ("GlowWell Vitamin C Face Serum 30 ml", "PERSONAL CARE", ("scripted", without("care@sunrisefoods.in")), 17),
+    ("SparkClean Dishwash Gel 500 ml", "HOUSEHOLD", ("scripted", without("MRP Rs. 45.00", "inclusive of all taxes", "per g")), 12),
+    ("FreshHome Floor Cleaner — Citrus 1 L", "HOUSEHOLD", ("scripted", without("Mfd. 03/2026")), 11),
     ("Nutri Millet Puffs 90 g", "FOOD", "real_undersized", 4),
-    ("Frooti Mango Drink 250 ml", "BEVERAGE", "sparse", 12),
+    ("Frooti Mango Drink 250 ml", "BEVERAGE", "sparse", 11),
     ("Yoga Bar Protein Oats — Cocoa 350 g", "FOOD", "sparse", 3),
     # a re-inspection: the same non-compliant pack, checked again more recently
-    ("Crax Corn Rings — Tomato 55 g", "SNACKS", ("scripted", without("inclusive of all taxes")), 2),
+    ("Crax Corn Rings — Tomato 55 g", "SNACKS", ("scripted", without("inclusive of all taxes")), 3),
 ]
 
 

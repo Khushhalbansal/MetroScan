@@ -31,6 +31,10 @@ def build_app(tmp_path, monkeypatch) -> tuple[TestClient, sessionmaker]:
     monkeypatch.setattr("app.core.config.settings.storage_dir", tmp_path / "storage")
     url = f"sqlite:///{(tmp_path / 'test.db').as_posix()}"
     monkeypatch.setattr("app.core.config.settings.database_url", url)
+    # The in-process retention sweep (Feature 6) is exercised directly in
+    # test_retention_auto_deletion.py; every other suite leaves it off so a test
+    # client's lifespan does not spin a background timer.
+    monkeypatch.setattr("app.core.config.settings.retention_sweep_enabled", False)
     command.upgrade(alembic_config(url), "head")
 
     engine = create_engine(url, connect_args={"check_same_thread": False})

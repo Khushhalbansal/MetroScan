@@ -51,6 +51,17 @@ class Settings(BaseSettings):
     # reads the effective value rather than this constant directly.
     retention_days: int = 30
 
+    # The auto-deletion job (Feature 6) also has a manual entry point,
+    # `python -m app.cli prune-scans`, for deployments that drive it from a system
+    # cron or a Kubernetes CronJob. When this is true the API process also runs it on
+    # a timer while it is up, so a plain deployment needs no external scheduler. Set
+    # false to leave it entirely to cron.
+    retention_sweep_enabled: bool = True
+    retention_sweep_interval_hours: float = 24.0
+    # A short pause after boot before the first sweep, so a rolling restart does not
+    # have every replica sweeping at once the instant it comes up.
+    retention_sweep_initial_delay_seconds: float = 60.0
+
     @property
     def is_dev(self) -> bool:
         return self.environment == "development"

@@ -17,6 +17,7 @@ from app.api.routes import admin, auth, dashboard, images, meta, reports, scans
 from app.core.config import settings
 from app.core.security import DEFAULT_DEV_SECRET
 from app.rules.loader import RulesetContractError, available_versions
+from app.services import retention_scheduler
 from app.services.imaging import ScanInputError
 
 log = logging.getLogger(__name__)
@@ -99,6 +100,11 @@ def create_app() -> FastAPI:
             f"JWT_SECRET is still the development default in environment "
             f"{settings.environment!r}. Set it to a long random value before starting."
         )
+
+    # Feature 6: the retention auto-deletion job runs on a timer while the API is up
+    # (unless retention_sweep_enabled is false, in which case a cron drives
+    # `app.cli prune-scans` instead).
+    retention_scheduler.attach(app)
 
     return app
 

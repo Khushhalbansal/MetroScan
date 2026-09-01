@@ -36,8 +36,10 @@ export function ScoreScale({
       setSwept(true);
       return;
     }
-    const id = requestAnimationFrame(() => setSwept(true));
-    return () => cancelAnimationFrame(id);
+    // Held ~420ms so the needle sweeps as the *conclusion* of the scan reveal —
+    // after the photo lands and the boxes have started drawing — not alongside it.
+    const id = window.setTimeout(() => setSwept(true), 420);
+    return () => window.clearTimeout(id);
   }, []);
 
   if (score === null) {

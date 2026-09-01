@@ -34,19 +34,21 @@
 
 .score__bar {
   height: 100%;
-  transition: width 760ms cubic-bezier(0.34, 1.22, 0.64, 1);
+  /* A weighted sweep with one clear overshoot — a needle settling, and you can
+     see it settle. Duration and easing match the index below so they move as one. */
+  transition: width 900ms cubic-bezier(0.33, 1.45, 0.55, 1);
 }
 
-/* The needle: a thin chassis-dark rule that sweeps to the reading with the bar and
-   comes to rest with one small overshoot. */
+/* The needle: a thin chassis-dark rule that sweeps to the reading and comes to
+   rest with the same visible overshoot as the bar. */
 .score__index {
   position: absolute;
-  top: -4px;
-  bottom: -4px;
-  width: 2px;
-  margin-left: -1px;
+  top: -5px;
+  bottom: -5px;
+  width: 2.5px;
+  margin-left: -1.25px;
   background: var(--chassis);
-  transition: left 760ms cubic-bezier(0.34, 1.22, 0.64, 1);
+  transition: left 900ms cubic-bezier(0.33, 1.45, 0.55, 1);
 }
 
 .score__bar--met {
@@ -91,9 +93,10 @@
 }
 
 .score__value {
-  font-size: var(--step-3);
+  font-size: clamp(2.4rem, 1.9rem + 2.2vw, 3rem);
   font-weight: 600;
   line-height: 1;
+  letter-spacing: -0.03em;
 }
 
 .score__value.is-met {

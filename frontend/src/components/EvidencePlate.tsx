@@ -107,7 +107,7 @@ export function EvidencePlate({ scanId, images, boxes, active, onHover, onSelect
                   style={{
                     strokeDasharray: perimeter,
                     strokeDashoffset: perimeter,
-                    animationDelay: `${Math.min(i, 14) * 55}ms`,
+                    animationDelay: `${Math.min(i, 14) * 95}ms`,
                   }}
                   vectorEffect="non-scaling-stroke"
                   onMouseEnter={() => onHover(box.ruleId)}

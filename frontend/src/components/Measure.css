@@ -8,9 +8,11 @@
   --tilt-x: 0deg;
   --tilt-y: 0deg;
   --tilt-settle: 0ms;
-  transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  /* Shorter perspective distance = more foreshortening at the same ≤6° angle, so
+     the plane visibly tips on a projector, not just on a laptop up close. */
+  transform: perspective(560px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
   transition: transform var(--tilt-settle) var(--ease-settle);
-  transform-origin: center 60%;
+  transform-origin: center 62%;
   will-change: transform;
 }
 

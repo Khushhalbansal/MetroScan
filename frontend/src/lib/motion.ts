@@ -10,7 +10,7 @@
   usePrefersReducedMotion() here so the two paths agree.
 */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -48,41 +48,51 @@ interface InViewOptions {
 
 /**
  * `[ref, inView]` — attach `ref` to an element, read `inView` to drive a
- * draw-on-enter animation. Under reduced motion it reports `true` immediately so
- * the content is simply present, never staged.
+ * draw-on-enter animation. `ref` is a **callback ref**, so the observer attaches
+ * the moment the node mounts — which matters when the target renders only after an
+ * async load (the Dashboard renders `.dash` after its fetch resolves; a plain
+ * ref object is still null on the first effect and the animation was skipped).
+ * Under reduced motion it reports `true` immediately so content is simply present.
  */
 export function useInView<T extends Element = HTMLDivElement>(
   options: InViewOptions = {},
-): [React.RefObject<T | null>, boolean] {
+): [(node: T | null) => void, boolean] {
   const { once = true, rootMargin = "0px 0px -10% 0px", amount = 0.15 } = options;
-  const ref = useRef<T>(null);
   const reduced = usePrefersReducedMotion();
   const [inView, setInView] = useState(reduced);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  useEffect(() => {
-    if (reduced) {
-      setInView(true);
-      return;
-    }
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
-      setInView(true);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          if (once) observer.disconnect();
-        } else if (!once) {
-          setInView(false);
-        }
-      },
-      { rootMargin, threshold: amount },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [once, rootMargin, amount, reduced]);
+  const ref = useCallback(
+    (node: T | null) => {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+
+      if (reduced || !node) {
+        if (reduced) setInView(true);
+        return;
+      }
+      if (typeof IntersectionObserver === "undefined") {
+        setInView(true);
+        return;
+      }
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setInView(true);
+            if (once) observer.disconnect();
+          } else if (!once) {
+            setInView(false);
+          }
+        },
+        { rootMargin, threshold: amount },
+      );
+      observer.observe(node);
+      observerRef.current = observer;
+    },
+    [once, rootMargin, amount, reduced],
+  );
+
+  useEffect(() => () => observerRef.current?.disconnect(), []);
 
   return [ref, inView];
 }
@@ -119,8 +129,10 @@ export function useTilt<T extends HTMLElement = HTMLElement>(
       if (!r.width || !r.height) return;
       const px = (e.clientX - r.left) / r.width - 0.5; // -0.5 … 0.5
       const py = (e.clientY - r.top) / r.height - 0.5;
+      // Both axes use the full ceiling so the tilt reads across a room, not only
+      // up close on a laptop. The ceiling itself (maxDeg) is unchanged.
       el.style.setProperty("--tilt-y", `${(px * 2 * maxDeg).toFixed(2)}deg`);
-      el.style.setProperty("--tilt-x", `${(-py * 2 * maxDeg * 0.6).toFixed(2)}deg`);
+      el.style.setProperty("--tilt-x", `${(-py * 2 * maxDeg).toFixed(2)}deg`);
       el.style.setProperty("--tilt-settle", "0ms"); // follow directly while pointing
     };
     const rest = () => {

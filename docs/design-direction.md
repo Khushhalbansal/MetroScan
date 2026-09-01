@@ -179,14 +179,23 @@ navigation, easing `cubic-bezier(0.2, 0, 0.2, 1)` (the existing `--tick` curve).
 of forward. Under reduced motion it is a cross-fade with no translation.
 
 **Data draws itself once.** Bars, the score scale, the Rule 8 rule and every dashboard chart animate
-from empty to their value **on first enter only**, stagger ≤ **40ms** per item. They never re-animate
-on hover, never loop, never pulse for attention. A value that changes later (a re-run moves the
-verdict) tweens to its new position over one `--tick`.
+from empty to their value **on first enter only**. Dashboard charts stagger ≤ **40ms** per item. They
+never re-animate on hover, never loop, never pulse for attention. A value that changes later (a re-run
+moves the verdict) tweens to its new position over one `--tick`.
 
-**The scan reveal is the one big moment** (unchanged in intent, now fully specified): annotation boxes
-stroke-draw in reading order, ledger rows stagger up a beat behind each box, the score index sweeps
-once and settles with a single small overshoot. One timeline, one hook (`useScanReveal`). Reduced
-motion: boxes appear, rows appear, index jumps — same information, no choreography.
+**The scan reveal is the one big moment — and it should read as one.** When a scan's results open, a
+judge glancing at the screen should *see it happen*, not need to be told. The sequence, in order:
+
+1. the photograph **lands** — a ~460ms fade with a hair of scale-down, settling onto the bench;
+2. the annotation boxes **stroke-draw** in reading order, ~95ms apart, ~620ms each;
+3. the ledger rows **rise and settle** a beat behind the boxes — from ~360ms, ~55ms apart, each a
+   440ms settle from 16px below;
+4. the score index **sweeps and settles** as the conclusion — held ~420ms, then a 900ms weighted
+   move with one *visible* overshoot (not a bounce; a needle coming to rest).
+
+The whole thing runs under ~2.2s and never repeats until the scan is reopened. It is a settling
+instrument, not a loading spinner: bounded, purposeful, once. Reduced motion: photo, boxes, rows and
+index all simply appear — same information, no choreography.
 
 ## Still forbidden (reaffirmed)
 

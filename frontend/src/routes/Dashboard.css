@@ -64,23 +64,26 @@
   gap: 1px;
   background: var(--ink-200);
   border: 1px solid var(--ink-200);
-  margin: 1.25rem 0;
+  margin: 1rem 0 0.75rem;
 }
 
 .reading {
   background: var(--bone);
-  padding: 0.9rem 1rem 1rem;
+  padding: 0.85rem 1rem 0.9rem;
 }
 
 .reading__label {
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.15rem;
 }
 
+/* The reading is the thing on the tile — sized and set so it carries the panel,
+   with the eyebrow label deliberately quiet above it. */
 .reading__value {
   margin: 0;
-  font-size: var(--step-3);
+  font-size: clamp(2.25rem, 1.8rem + 2vw, 2.7rem);
   font-weight: 600;
   line-height: 1;
+  letter-spacing: -0.03em;
 }
 
 .reading__value--oxide {
@@ -89,8 +92,9 @@
 .reading__value--brass {
   color: var(--brass);
   font-family: var(--body);
-  font-size: var(--step-1);
-  font-weight: 600;
+  font-size: var(--step-2);
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }
 .reading__value--patina {
   color: var(--patina);
@@ -106,7 +110,7 @@
 
 .dash__panel {
   border-top: 1.5px solid var(--chassis);
-  padding: 0.9rem 0 1.4rem;
+  padding: 0.75rem 0 1.2rem;
 }
 
 .dash__panel--attention {

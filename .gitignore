@@ -47,3 +47,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Generated demo-review captures (regenerate: frontend/scripts/shot-demo.mjs)
+frontend/demo-shots/

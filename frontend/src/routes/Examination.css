@@ -103,13 +103,15 @@
   border-top: 1px solid var(--ink-200);
   background: transparent;
   transition: background var(--tick);
-  animation: row-settle 300ms cubic-bezier(0.2, 0, 0.2, 1) both;
+  /* Each row rises into place and settles — part of the scan-reveal sequence
+     (design-direction.md v2). Delay is set per-row inline in Examination.tsx. */
+  animation: row-settle 440ms var(--ease-settle) both;
 }
 
 @keyframes row-settle {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -127,21 +129,33 @@
   width: 3px;
 }
 
+/* Severity leads the eye: a violation runs hotter than a review runs hotter than
+   a settled pass — a wider ink edge and the faintest oxide wash on a FAIL. */
 .ledger__row--FAIL::before {
   background: var(--oxide);
+  width: 4px;
+}
+.ledger__row--FAIL {
+  background: color-mix(in srgb, var(--oxide-tint) 55%, transparent);
 }
 .ledger__row--NEEDS_REVIEW::before {
   background: var(--brass);
 }
 .ledger__row--PASS::before {
   background: var(--patina);
+  width: 2px;
 }
 .ledger__row--NA::before {
   background: var(--ink-200);
+  width: 2px;
 }
 
 .ledger__row.is-active {
   background: var(--ink-050);
+}
+
+.ledger__row--FAIL.is-active {
+  background: color-mix(in srgb, var(--oxide-tint) 85%, transparent);
 }
 
 .ledger__head {

@@ -37,6 +37,11 @@ export function EvidencePlate({ scanId, images, boxes, active, onHover, onSelect
   const [src, setSrc] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
+  // Three planes on pointer parallax (design-direction.md v2): the photo drifts
+  // one way, the annotation overlay the other, ≤12px. Pointer-fine only. Declared
+  // here, above the early return, so the hook order is stable.
+  const parallax = useParallax<HTMLDivElement>(12);
+
   const image = images[index];
 
   useEffect(() => {
@@ -67,10 +72,6 @@ export function EvidencePlate({ scanId, images, boxes, active, onHover, onSelect
   }
 
   const shown = boxes.filter((b) => b.imageId === image.image_id);
-
-  // Three planes on pointer parallax (design-direction.md v2): the photo drifts
-  // one way, the annotation overlay the other, ≤12px. Pointer-fine only.
-  const parallax = useParallax<HTMLDivElement>(12);
 
   return (
     <figure className="plate">

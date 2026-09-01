@@ -163,6 +163,12 @@
   }
 }
 
+/* Shown only for the moment a code-split route chunk is in flight. */
+.route__loading {
+  padding: 2rem 0;
+  color: var(--ink-400);
+}
+
 .boot {
   display: grid;
   place-items: center;

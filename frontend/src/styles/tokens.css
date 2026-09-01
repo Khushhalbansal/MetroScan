@@ -38,8 +38,11 @@
   --seal-pressed: #1b3155;
 
   /* --- type: three roles --------------------------------------------------- */
-  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
-  --body: "IBM Plex Sans", "IBM Plex Sans Devanagari", system-ui, sans-serif;
+  /* Self-hosted (see main.tsx). The "Variable" names are the @fontsource faces;
+     the plain names stay as a fallback for anyone who has them installed. */
+  --display: "Archivo Variable", "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans Variable", "IBM Plex Sans", "IBM Plex Sans Devanagari",
+    system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
   /* Display is pushed wide — engineered signage, the silkscreen on an instrument

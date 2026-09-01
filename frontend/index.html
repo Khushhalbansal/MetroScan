@@ -17,17 +17,11 @@
     <title>MetroScan — Legal Metrology compliance bench</title>
 
     <!--
-      Archivo for display (pushed wide, engineered signage), IBM Plex Sans + Devanagari
-      for body, IBM Plex Mono for every number. A government deployment should
-      self-host these rather than depend on a CDN reaching a district office; the
-      stacks below all fall back to system faces if the request never lands.
+      Archivo for display (pushed wide, engineered signage), IBM Plex Sans +
+      Devanagari for body, IBM Plex Mono for every number. Self-hosted via
+      @fontsource (imported in src/main.tsx) so a district office is never blocked
+      on a CDN reaching it; the token stacks fall back to system faces meanwhile.
     -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@110..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <div id="root"></div>

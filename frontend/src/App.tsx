@@ -6,7 +6,7 @@
   content examined under good light.
 */
 
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import {
   NavLink,
   Navigate,
@@ -18,12 +18,20 @@ import {
 
 import { ApiError, api, storedToken } from "./api/client";
 import type { User } from "./api/types";
-import { Dashboard } from "./routes/Dashboard";
-import { Examination } from "./routes/Examination";
-import { NewScan } from "./routes/NewScan";
-import { Repository } from "./routes/Repository";
 import { SignIn } from "./routes/SignIn";
 import "./App.css";
+
+// The four authenticated views are code-split: a field device on a slow link
+// downloads the dashboard, not the whole app, on first paint. SignIn stays in the
+// main chunk — it is the first screen for a signed-out officer and must be instant.
+const Dashboard = lazy(() => import("./routes/Dashboard").then((m) => ({ default: m.Dashboard })));
+const Examination = lazy(() =>
+  import("./routes/Examination").then((m) => ({ default: m.Examination })),
+);
+const NewScan = lazy(() => import("./routes/NewScan").then((m) => ({ default: m.NewScan })));
+const Repository = lazy(() =>
+  import("./routes/Repository").then((m) => ({ default: m.Repository })),
+);
 
 type Session = { state: "loading" } | { state: "out" } | { state: "in"; user: User };
 
@@ -124,16 +132,18 @@ export default function App() {
         {/* Keyed on the path so each route mounts fresh and plays its short
             enter fade (.route in App.css). */}
         <div className="route" key={location.pathname}>
-          <Routes location={location}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/scans" element={<Repository />} />
-            <Route path="/scans/new" element={<NewScan />} />
-            <Route path="/scans/:scanId" element={<Examination />} />
-            {/* Someone who has just signed in is still standing on /sign-in; send
-                them on rather than leaving them at a route this table has no page for. */}
-            <Route path="/sign-in" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+          <Suspense fallback={<p className="eyebrow route__loading">Opening…</p>}>
+            <Routes location={location}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/scans" element={<Repository />} />
+              <Route path="/scans/new" element={<NewScan />} />
+              <Route path="/scans/:scanId" element={<Examination />} />
+              {/* Someone who has just signed in is still standing on /sign-in; send
+                  them on rather than leaving them at a route this table has no page for. */}
+              <Route path="/sign-in" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </Suspense>
         </div>
       </main>
     </div>

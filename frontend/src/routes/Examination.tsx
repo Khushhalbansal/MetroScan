@@ -56,6 +56,14 @@ export function Examination() {
     };
   }, [scanId]);
 
+  // The report PDF is fetched with auth and held as a blob URL. Revoke the previous
+  // one whenever it is replaced or the page unmounts, so repeated "Prepare report"
+  // presses and leaving the view don't leak object URLs.
+  useEffect(() => {
+    if (!reportUrl) return;
+    return () => URL.revokeObjectURL(reportUrl);
+  }, [reportUrl]);
+
   const findings = useMemo(() => {
     if (!scan) return [];
     return [...scan.findings].sort(
@@ -165,7 +173,7 @@ export function Examination() {
         <div className="exam__verdict-mark">
           <VerdictMark verdict={assessment.verdict} />
           {assessment.overridden > 0 && (
-            <p className="exam__after">
+            <p className="exam__after" role="status">
               after {assessment.overridden} officer decision
               {assessment.overridden === 1 ? "" : "s"} — the software found{" "}
               <strong>{assessment.automated_verdict.replace("_", " ").toLowerCase()}</strong>
@@ -266,6 +274,11 @@ export function Examination() {
                   onMouseLeave={() => setActive(null)}
                   onFocus={() => setActive(finding.rule_id)}
                   onBlur={() => setActive(null)}
+                  // Deliberately focusable: tabbing a row previews its box on the
+                  // photograph (the two-way ledger⇄evidence link the brief calls for).
+                  // The row is not "activated" — there is nothing to press — so a
+                  // button role would misdescribe it.
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                   tabIndex={0}
                 >
                   <div className="ledger__head">

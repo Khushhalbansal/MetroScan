@@ -55,7 +55,11 @@ export function DeleteScanDialog({ productName, caseOpen, onClose, onConfirm }: 
   };
 
   return (
-    <div className="scrim" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="scrim"
+      role="presentation"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
         <p className="eyebrow">Delete scan</p>
         <h2 id="delete-title" className="dialog__title">
